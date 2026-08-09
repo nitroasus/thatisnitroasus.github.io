@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>nitroasus - artist / dev</title>
+    
+    <!-- ПОДКЛЮЧАЕМ 8-БИТНЫЙ ШРИФТ -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+
+    <style>
+        /* ---------- ГЛОБАЛЬНЫЕ ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        /* ---------- ОСНОВНОЙ КОНТЕЙНЕР С FLEX ---------- */
+        .main-layout {
+            display: flex;
+            gap: 40px;
+            max-width: 1300px;
+            margin: 0 auto;
+            align-items: flex-start;
+        }
+
+        .content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* ---------- ТЕТРИС ---------- */
+        .tetris-side {
+            flex-shrink: 0;
+            width: 320px;
+            position: sticky;
+            top: 30px;
+        }
+
+        .tetris-container {
+            background: linear-gradient(145deg, #111111, #1a1a1a);
+            border-radius: 20px;
+            border: 1px solid #2a2a2a;
+            padding: 25px 20px 20px;
+            text-align: center;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .tetris-container:hover {
+            border-color: #880000;
+            box-shadow: 0 0 40px rgba(136, 0, 0, 0.15);
+        }
+
+        .tetris-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 14px;
+            color: #880000;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px rgba(136, 0, 0, 0.4);
+            animation: tetrisPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes tetrisPulse {
+            0%, 100% { opacity: 0.7; text-shadow: 0 0 10px rgba(136, 0, 0, 0.3); }
+            50% { opacity: 1; text-shadow: 0 0 30px rgba(136, 0, 0, 0.7); }
+        }
+
+        .tetris-wrapper {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            align-items: flex-start;
+        }
+
+        #tetrisCanvas {
+            background: #0a0a0a;
+            border: 2px solid #2a2a2a;
+            border-radius: 8px;
+            image-rendering: pixelated;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5), inset 0 0 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .tetris-info {
+            text-align: left;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 10px;
+            color: #666;
+            line-height: 2;
+            min-width: 80px;
+        }
+
+        .tetris-info .label {
+            color: #444;
+            font-size: 8px;
+            letter-spacing: 1px;
+        }
+
+        .tetris-info .value {
+            color: #888;
+            font-size: 14px;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .tetris-info .value.high {
+            color: #880000;
+            text-shadow: 0 0 15px rgba(136, 0, 0, 0.3);
+        }
+
+        .tetris-controls {
+            margin-top: 15px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 8px;
+            color: #444;
+            letter-spacing: 0.5px;
+            line-height: 2;
+            border-top: 1px solid #1a1a1a;
+            padding-top: 12px;
+        }
+
+        .tetris-controls span {
+            color: #666;
+        }
+
+        .tetris-controls .key {
+            color: #880000;
+            font-size: 10px;
+        }
+
+        /* ---------- 8-БИТНЫЙ СТИЛЬ ---------- */
+        .pixel-font {
+            font-family: 'Press Start 2P', monospace;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(204, 0, 0, 0.3);
+        }
+
+        /* ---------- ФОН: СВЕТЯЩИЕСЯ ТОЧКИ ---------- */
+        .bg-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: #cc0000;
+            box-shadow: 0 0 10px #cc0000;
+            animation: float linear infinite;
+            opacity: 0.4;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0) scale(0.3);
+                opacity: 0;
+            }
+            20% { opacity: 0.5; }
+            80% { opacity: 0.5; }
+            100% {
+                transform: translateY(-10vh) translateX(60px) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        /* ---------- ОБЩИЙ КОНТЕЙНЕР ---------- */
+        .wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ---------- ШАПКА ---------- */
+        header {
+            text-align: center;
+            padding: 40px 20px 30px;
+            border-bottom: 2px solid #1a1a1a;
+            margin-bottom: 50px;
+        }
+
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            box-shadow: 0 0 60px rgba(204, 0, 0, 0.3);
+            border: 3px solid #cc0000;
+            overflow: hidden;
+            background: #1a1a1a;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        h1 {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 42px;
+            font-weight: 400;
+            background: linear-gradient(135deg, #ff1a1a, #cc0000, #ff3333);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            text-shadow: 0 0 30px rgba(204, 0, 0, 0.3);
+        }
+
+        .tagline {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 14px;
+            color: #888;
+            letter-spacing: 3px;
+            margin-top: 12px;
+            text-transform: uppercase;
+        }
+
+        .tagline span { color: #cc0000; }
+
+        /* ---------- СЕКЦИИ ---------- */
+        section {
+            background: linear-gradient(145deg, #111111, #1a1a1a);
+            border-radius: 20px;
+            border: 1px solid #2a2a2a;
+            padding: 40px 45px;
+            margin-bottom: 40px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        section:hover {
+            border-color: #cc0000;
+            box-shadow: 0 0 40px rgba(204, 0, 0, 0.05);
+        }
+
+        .section-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 22px;
+            font-weight: 400;
+            color: #cc0000;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title .icon { font-size: 28px; }
+
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(to right, #cc0000, transparent);
+        }
+
+        /* ---------- СЕТКА КАРТОЧЕК ---------- */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 25px;
+        }
+
+        /* ---------- КАРТОЧКА ПРОЕКТА ---------- */
+        .project-card {
+            background: #0f0f0f;
+            border-radius: 16px;
+            padding: 25px 20px;
+            border: 1px solid #222;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #e0e0e0;
+            display: block;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(204, 0, 0, 0.05), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .project-card:hover {
+            border-color: #cc0000;
+            transform: translateY(-6px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 30px rgba(204, 0, 0, 0.1);
+        }
+
+        .project-card:hover::before { opacity: 1; }
+
+        .project-card .emoji {
+            font-size: 36px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .project-card h3 {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 14px;
+            font-weight: 400;
+            margin-bottom: 8px;
+            color: #fff;
+            letter-spacing: 0.5px;
+            line-height: 1.6;
+        }
+
+        .project-card .desc {
+            font-size: 13px;
+            color: #999;
+            line-height: 1.5;
+            letter-spacing: 0.5px;
+        }
+
+        .project-card .badge {
+            display: inline-block;
+            margin-top: 12px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #cc0000;
+            border: 1px solid #cc0000;
+            padding: 4px 14px;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+
+        .project-card:hover .badge {
+            background: #cc0000;
+            color: #0a0a0a;
+        }
+
+        .project-card.track .badge {
+            color: #ff4444;
+            border-color: #ff4444;
+        }
+
+        .project-card.track:hover .badge {
+            background: #ff4444;
+            color: #0a0a0a;
+        }
+
+        /* ---------- БИОГРАФИЯ ---------- */
+        .bio-text {
+            font-size: 18px;
+            line-height: 1.8;
+            color: #bbbbbb;
+            max-width: 700px;
+        }
+
+        .bio-text strong { color: #ff3333; }
+
+        .bio-text .highlight {
+            color: #cc0000;
+            font-weight: 600;
+        }
+
+        .bio-text .date {
+            color: #ff4444;
+        }
+
+        .bio-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .bio-tag {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 11px;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            padding: 6px 16px;
+            border-radius: 30px;
+            color: #aaa;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            transition: all 0.3s;
+        }
+
+        .bio-tag:hover {
+            border-color: #cc0000;
+            color: #cc0000;
+        }
+
+        /* ---------- ПОДВАЛ ---------- */
+        footer {
+            text-align: center;
+            padding: 30px 0 10px;
+            border-top: 1px solid #1a1a1a;
+            color: #444;
+            font-size: 14px;
+            letter-spacing: 2px;
+        }
+
+        footer span { color: #cc0000; }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .social-links a {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 11px;
+            color: #666;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+
+        .social-links a:hover { color: #cc0000; }
+
+        .footer-copy {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        /* ---------- АДАПТИВ ---------- */
+        @media (max-width: 900px) {
+            .main-layout {
+                flex-direction: column;
+            }
+            .tetris-side {
+                width: 100%;
+                position: static;
+            }
+            .tetris-wrapper {
+                flex-direction: column;
+                align-items: center;
+            }
+            .tetris-info {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 20px;
+                text-align: center;
+            }
+            .tetris-info .value {
+                display: inline;
+                margin-bottom: 0;
+                margin-left: 5px;
+            }
+        }
+
+        @media (max-width: 700px) {
+            h1 { font-size: 28px; }
+            section { padding: 25px 20px; }
+            .grid { grid-template-columns: 1fr; }
+            .section-title { font-size: 18px; }
+            .avatar { width: 90px; height: 90px; }
+            .project-card h3 { font-size: 12px; }
+            .social-links a { font-size: 9px; }
+            #tetrisCanvas {
+                width: 200px;
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ---------- ФОН ---------- -->
+    <div class="bg-particles" id="particles"></div>
+
+    <!-- ---------- ОСНОВНОЙ КОНТЕЙНЕР ---------- -->
+    <div class="wrapper">
+
+        <!-- ===== ШАПКА ===== -->
+        <header>
+            <div class="avatar">
+                <img src="avatar.jpg" alt="nitroasus" />
+            </div>
+            <h1>nitroasus</h1>
+            <div class="tagline"><span>✦</span> artist / developer <span>✦</span></div>
+        </header>
+
+        <!-- ===== MAIN LAYOUT: КОНТЕНТ + ТЕТРИС ===== -->
+        <div class="main-layout">
+
+            <!-- ЛЕВАЯ ЧАСТЬ: КОНТЕНТ -->
+            <div class="content">
+
+                <!-- ===== ОБО МНЕ ===== -->
+                <section>
+                    <div class="section-title">
+                        <span class="icon">🔥</span> Обо мне
+                    </div>
+                    <div class="bio-text">
+                        <p>
+                            Привет! Я <strong>nitroasus</strong> - артист, который пишет <strong>музыку</strong> 
+                            и создаёт <strong>игры</strong>. Днём кодирую, ночью свожу треки. 
+                        </p>
+                        <p style="margin-top: 12px; color: #888;">
+                            🎯 Моя цель - делать дарк-поп и хоррор-кор песни, которые будут захватывать
+                        </p>
+                    </div>
+                    <div class="bio-tags">
+                        <span class="bio-tag">🎵 Electronic/Rock</span>
+                        <span class="bio-tag">🎮 Indie Games</span>
+                        <span class="bio-tag">💻 Developer</span>
+                        <span class="bio-tag">🎚️ Producer</span>
+                    </div>
+                </section>
+
+                <!-- ===== МУЗЫКА ===== -->
+                <section>
+                    <div class="section-title">
+                        <span class="icon">🎵</span> Треки
+                    </div>
+                    <div class="grid">
+
+                        <a href="https://music.youtube.com/@thatisnitroasus" class="project-card track" target="_blank">
+                            <span class="emoji">🎧</span>
+                            <h3>YouTube Music</h3>
+                            <div class="desc">все треки и альбомы nitroasus</div>
+                            <span class="badge">▶ Слушать</span>
+                        </a>
+
+                        <a href="https://band.link/3G10e" class="project-card track" target="_blank">
+                            <span class="emoji">💔</span>
+                            <h3>альбом "если я больше никогда не вернусь"</h3>
+                            <div class="desc">новый эмоциональный релиз</div>
+                            <span class="badge">▶ Слушать</span>
+                        </a>
+
+                        <a href="https://genius.com/artists/Nitroasus" class="project-card track" target="_blank">
+                            <span class="emoji">🟡</span>
+                            <h3>Genius</h3>
+                            <div class="desc">тексты песен</div>
+                            <span class="badge">▶ Читать</span>    
+                        </a>
+
+                    </div>
+                </section>
+
+                <!-- ===== ИГРЫ ===== -->
+                <section>
+                    <div class="section-title">
+                        <span class="icon">🎮</span> Игры
+                    </div>
+                    <div class="grid">
+
+                        <a href="https://nitroasusdeveloper.itch.io/" class="project-card" target="_blank">
+                            <span class="emoji">🎮</span>
+                            <h3>Itch.io</h3>
+                            <div class="desc">все игры nitroasus на itch.io</div>
+                            <span class="badge">▶ Играть</span>
+                        </a>
+
+                        <a href="https://play.google.com/store/apps/dev?id=6534818730371567292" class="project-card" target="_blank">
+                            <span class="emoji">📱</span>
+                            <h3>Google Play</h3>
+                            <div class="desc">мобильные игры в Google Play</div>
+                            <span class="badge">▶ Играть</span>
+                        </a>
+
+                        <a href="https://vkplay.ru/play/game/bunker-massacre-horror-48827/?mt_link_id=lw4xm9" class="project-card" target="_blank">
+                            <span class="emoji">☠️</span>
+                            <h3>Bunker Massacre</h3>
+                            <div class="desc">хоррор-игра на VK Play</div>
+                            <span class="badge">▶ Купить</span>
+                        </a>
+
+                    </div>
+                </section>
+
+                <!-- ===== БИОГРАФИЯ ===== -->
+                <section>
+                    <div class="section-title">
+                        <span class="icon">📖</span> моя биография
+                    </div>
+                    <div class="bio-text">
+                        <p>
+                            <strong>Тимофеев Данила Александрович</strong>, известный как 
+                            <span class="highlight">nitroasus</span>, родился 
+                            <span class="date">4 января 2013 года</span> в городе 
+                            <strong>Самара</strong>, Россия.
+                        </p>
+                        <p style="margin-top: 16px;">
+                            🎸 Пишет треки в стиле <strong>дарк-поп</strong>, <strong>рок</strong>, 
+                            <strong>альтернатива</strong> и <strong>метал</strong>.
+                        </p>
+                        <p style="margin-top: 16px;">
+                            🇷🇺 Российский музыкальный продюсер и автор песен. 
+                            На YouTube-канале <span class="highlight">1к+</span> подписчиков.
+                        </p>
+                    </div>
+                </section>
+
+            </div>
+            <!-- КОНЕЦ ЛЕВОЙ ЧАСТИ -->
+
+            <!-- ПРАВАЯ ЧАСТЬ: ТЕТРИС -->
+            <div class="tetris-side">
+                <div class="tetris-container">
+                    <div class="tetris-wrapper">
+                        <canvas id="tetrisCanvas" width="200" height="400"></canvas>
+                        <div class="tetris-info">
+                            <div>
+                                <span class="label">ОЧКИ</span>
+                                <span class="value" id="scoreDisplay">0</span>
+                            </div>
+                            <div>
+                                <span class="label">РЕКОРД</span>
+                                <span class="value high" id="highScoreDisplay">0</span>
+                            </div>
+                            <div>
+                                <span class="label">УРОВЕНЬ</span>
+                                <span class="value" id="levelDisplay">1</span>
+                            </div>
+                            <div>
+                                <span class="label">ЛИНИИ</span>
+                                <span class="value" id="linesDisplay">0</span>
+                            </div>
+                            <div style="margin-top: 8px;">
+                                <span class="label">СЛЕД.</span>
+                                <canvas id="nextCanvas" width="80" height="80" style="background:#0a0a0a; border:1px solid #1a1a1a; border-radius:4px; display:block; margin-top:4px;"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tetris-controls">
+                        <span class="key">← →</span> движение <span>|</span>
+                        <span class="key">↑</span> поворот <span>|</span>
+                        <span class="key">↓</span> ускорение <span>|</span>
+                        <span class="key">ПРОБЕЛ</span> сброс
+                    </div>
+                </div>
+            </div>
+            <!-- КОНЕЦ ПРАВОЙ ЧАСТИ -->
+
+        </div>
+        <!-- КОНЕЦ MAIN LAYOUT -->
+
+        <!-- ===== ПОДВАЛ ===== -->
+        <footer>
+            <div class="footer-copy">
+                <span>✦</span> © nitroasus - 2026 <span>✦</span>
+            </div>
+            <div class="social-links">
+                <a href="https://music.youtube.com/@thatisnitroasus" target="_blank">YouTube Music</a>
+                <a href="https://nitroasusdeveloper.itch.io/" target="_blank">Itch.io</a>
+                <a href="https://play.google.com/store/apps/dev?id=6534818730371567292" target="_blank">Google Play</a>
+                <a href="https://vkplay.ru/play/game/bunker-massacre-horror-48827/?mt_link_id=lw4xm9" target="_blank">VK Play</a>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- ---------- JAVASCRIPT: ТЕТРИС ---------- -->
+    <script>
+        // ---- ТЕТРИС В ХОРРОР-СТИЛЕ ----
+        (function() {
+            const canvas = document.getElementById('tetrisCanvas');
+            const ctx = canvas.getContext('2d');
+            const nextCanvas = document.getElementById('nextCanvas');
+            const nextCtx = nextCanvas.getContext('2d');
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            const highScoreDisplay = document.getElementById('highScoreDisplay');
+            const levelDisplay = document.getElementById('levelDisplay');
+            const linesDisplay = document.getElementById('linesDisplay');
+
+            // РАЗМЕРЫ
+            const COLS = 10;
+            const ROWS = 20;
+            const BLOCK_SIZE = 20;
+
+            // ФИГУРЫ (классический тетрис)
+            const SHAPES = [
+                { // I
+                    matrix: [[1,1,1,1]],
+                    color: '#666'
+                },
+                { // O
+                    matrix: [[1,1],[1,1]],
+                    color: '#777'
+                },
+                { // T
+                    matrix: [[0,1,0],[1,1,1]],
+                    color: '#888'
+                },
+                { // S
+                    matrix: [[0,1,1],[1,1,0]],
+                    color: '#999'
+                },
+                { // Z
+                    matrix: [[1,1,0],[0,1,1]],
+                    color: '#888'
+                },
+                { // L
+                    matrix: [[1,0,0],[1,1,1]],
+                    color: '#777'
+                },
+                { // J
+                    matrix: [[0,0,1],[1,1,1]],
+                    color: '#666'
+                }
+            ];
+
+            // СОСТОЯНИЕ ИГРЫ
+            let board = [];
+            let currentPiece = null;
+            let score = 0;
+            let highScore = parseInt(localStorage.getItem('tetrisHighScore')) || 0;
+            let level = 1;
+            let lines = 0;
+            let gameOver = false;
+            let dropInterval = null;
+            let isPaused = false;
+
+            // ИНИЦИАЛИЗАЦИЯ
+            function initBoard() {
+                board = [];
+                for (let r = 0; r < ROWS; r++) {
+                    board.push(new Array(COLS).fill(0));
+                }
+            }
+
+            // СОЗДАНИЕ НОВОЙ ФИГУРЫ
+            function createPiece() {
+                const idx = Math.floor(Math.random() * SHAPES.length);
+                const shape = SHAPES[idx];
+                return {
+                    matrix: shape.matrix.map(row => [...row]),
+                    color: shape.color,
+                    x: Math.floor((COLS - shape.matrix[0].length) / 2),
+                    y: 0
+                };
+            }
+
+            // ПРОВЕРКА СТОЛКНОВЕНИЯ
+            function collides(matrix, pieceX, pieceY) {
+                for (let r = 0; r < matrix.length; r++) {
+                    for (let c = 0; c < matrix[0].length; c++) {
+                        if (matrix[r][c] !== 0) {
+                            const boardX = pieceX + c;
+                            const boardY = pieceY + r;
+                            if (boardX < 0 || boardX >= COLS || boardY >= ROWS || boardY < 0) return true;
+                            if (boardY >= 0 && board[boardY][boardX] !== 0) return true;
+                        }
+                    }
+                }
+                return false;
+            }
+
+            // ЗАКРЕПЛЕНИЕ ФИГУРЫ НА ДОСКЕ
+            function lockPiece() {
+                for (let r = 0; r < currentPiece.matrix.length; r++) {
+                    for (let c = 0; c < currentPiece.matrix[0].length; c++) {
+                        if (currentPiece.matrix[r][c] !== 0) {
+                            const boardX = currentPiece.x + c;
+                            const boardY = currentPiece.y + r;
+                            if (boardY < 0) {
+                                gameOver = true;
+                                clearInterval(dropInterval);
+                                return;
+                            }
+                            board[boardY][boardX] = currentPiece.color;
+                        }
+                    }
+                }
+
+                // УДАЛЕНИЕ ЗАПОЛНЕННЫХ ЛИНИЙ
+                let cleared = 0;
+                for (let r = ROWS - 1; r >= 0; r--) {
+                    if (board[r].every(cell => cell !== 0)) {
+                        board.splice(r, 1);
+                        board.unshift(new Array(COLS).fill(0));
+                        cleared++;
+                        r++; // проверяем ту же строку снова
+                    }
+                }
+
+                if (cleared > 0) {
+                    // ОЧКИ: 100 * уровень * количество линий
+                    const points = [0, 100, 300, 500, 800];
+                    const addScore = (points[cleared] || 0) * level;
+                    score += addScore;
+                    lines += cleared;
+
+                    // ПОВЫШЕНИЕ УРОВНЯ
+                    level = Math.floor(lines / 10) + 1;
+                    if (dropInterval) {
+                        clearInterval(dropInterval);
+                        const speed = Math.max(100, 500 - (level - 1) * 40);
+                        dropInterval = setInterval(dropPiece, speed);
+                    }
+                }
+
+                updateInfo();
+
+                // НОВАЯ ФИГУРА
+                currentPiece = createPiece();
+                if (collides(currentPiece.matrix, currentPiece.x, currentPiece.y)) {
+                    gameOver = true;
+                    clearInterval(dropInterval);
+                    if (score > highScore) {
+                        highScore = score;
+                        localStorage.setItem('tetrisHighScore', highScore);
+                    }
+                    updateInfo();
+                }
+                drawNext();
+                draw();
+            }
+
+            // ПАДЕНИЕ
+            function dropPiece() {
+                if (gameOver || !currentPiece) return;
+                if (!collides(currentPiece.matrix, currentPiece.x, currentPiece.y + 1)) {
+                    currentPiece.y++;
+                    draw();
+                } else {
+                    lockPiece();
+                    draw();
+                }
+            }
+
+            // ДВИЖЕНИЕ
+            function movePiece(dx) {
+                if (gameOver || !currentPiece) return;
+                if (!collides(currentPiece.matrix, currentPiece.x + dx, currentPiece.y)) {
+                    currentPiece.x += dx;
+                    draw();
+                }
+            }
+
+            // ПОВОРОТ
+            function rotatePiece() {
+                if (gameOver || !currentPiece) return;
+                const matrix = currentPiece.matrix;
+                const rotated = matrix[0].map((_, idx) => matrix.map(row => row[idx]).reverse());
+                if (!collides(rotated, currentPiece.x, currentPiece.y)) {
+                    currentPiece.matrix = rotated;
+                    draw();
+                } else {
+                    // WALL KICK: попытка сместить
+                    const kicks = [-1, 1, -2, 2];
+                    for (const kick of kicks) {
+                        if (!collides(rotated, currentPiece.x + kick, currentPiece.y)) {
+                            currentPiece.matrix = rotated;
+                            currentPiece.x += kick;
+                            draw();
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // ХАРД ДРОП (пробел)
+            function hardDrop() {
+                if (gameOver || !currentPiece) return;
+                while (!collides(currentPiece.matrix, currentPiece.x, currentPiece.y + 1)) {
+                    currentPiece.y++;
+                }
+                lockPiece();
+                draw();
+            }
+
+            // ОТРИСОВКА
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // РИСУЕМ ДОСКУ
+                for (let r = 0; r < ROWS; r++) {
+                    for (let c = 0; c < COLS; c++) {
+                        if (board[r][c] !== 0) {
+                            ctx.fillStyle = board[r][c];
+                            ctx.fillRect(c * BLOCK_SIZE, r * BLOCK_SIZE, BLOCK_SIZE - 0.5, BLOCK_SIZE - 0.5);
+                            // Хоррор-эффект: затемнение
+                            ctx.fillStyle = 'rgba(0,0,0,0.15)';
+                            ctx.fillRect(c * BLOCK_SIZE, r * BLOCK_SIZE, BLOCK_SIZE - 0.5, BLOCK_SIZE - 0.5);
+                        } else {
+                            ctx.fillStyle = '#0a0a0a';
+                            ctx.fillRect(c * BLOCK_SIZE, r * BLOCK_SIZE, BLOCK_SIZE - 0.5, BLOCK_SIZE - 0.5);
+                            ctx.fillStyle = '#111';
+                            ctx.fillRect(c * BLOCK_SIZE + 0.5, r * BLOCK_SIZE + 0.5, 1, 1);
+                        }
+                    }
+                }
+
+                // РИСУЕМ ТЕКУЩУЮ ФИГУРУ
+                if (currentPiece && !gameOver) {
+                    for (let r = 0; r < currentPiece.matrix.length; r++) {
+                        for (let c = 0; c < currentPiece.matrix[0].length; c++) {
+                            if (currentPiece.matrix[r][c] !== 0) {
+                                const x = (currentPiece.x + c) * BLOCK_SIZE;
+                                const y = (currentPiece.y + r) * BLOCK_SIZE;
+                                ctx.fillStyle = currentPiece.color;
+                                ctx.fillRect(x, y, BLOCK_SIZE - 0.5, BLOCK_SIZE - 0.5);
+                                // Эффект свечения
+                                ctx.shadowColor = 'rgba(136,0,0,0.2)';
+                                ctx.shadowBlur = 4;
+                                ctx.fillRect(x, y, BLOCK_SIZE - 0.5, BLOCK_SIZE - 0.5);
+                                ctx.shadowBlur = 0;
+                            }
+                        }
+                    }
+                }
+
+                // GAME OVER
+                if (gameOver) {
+                    ctx.fillStyle = 'rgba(0,0,0,0.7)';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = '#880000';
+                    ctx.font = '18px "Press Start 2P", monospace';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('GAME OVER', canvas.width/2, canvas.height/2 - 10);
+                    ctx.fillStyle = '#666';
+                    ctx.font = '10px "Press Start 2P", monospace';
+                    ctx.fillText('ПРОБЕЛ', canvas.width/2, canvas.height/2 + 30);
+                }
+            }
+
+            // ОТРИСОВКА СЛЕДУЮЩЕЙ ФИГУРЫ
+            function drawNext() {
+                nextCtx.clearRect(0, 0, nextCanvas.width, nextCanvas.height);
+                if (currentPiece) {
+                    const matrix = currentPiece.matrix;
+                    const blockSize = 20;
+                    const cols = matrix[0].length;
+                    const rows = matrix.length;
+                    const offsetX = (nextCanvas.width - cols * blockSize) / 2;
+                    const offsetY = (nextCanvas.height - rows * blockSize) / 2;
+                    for (let r = 0; r < rows; r++) {
+                        for (let c = 0; c < cols; c++) {
+                            if (matrix[r][c] !== 0) {
+                                nextCtx.fillStyle = currentPiece.color;
+                                nextCtx.fillRect(offsetX + c * blockSize, offsetY + r * blockSize, blockSize - 0.5, blockSize - 0.5);
+                                nextCtx.shadowColor = 'rgba(136,0,0,0.15)';
+                                nextCtx.shadowBlur = 4;
+                                nextCtx.fillRect(offsetX + c * blockSize, offsetY + r * blockSize, blockSize - 0.5, blockSize - 0.5);
+                                nextCtx.shadowBlur = 0;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // ОБНОВЛЕНИЕ ИНФО
+            function updateInfo() {
+                scoreDisplay.textContent = score;
+                highScoreDisplay.textContent = highScore;
+                levelDisplay.textContent = level;
+                linesDisplay.textContent = lines;
+            }
+
+            // РЕСТАРТ
+            function restartGame() {
+                if (dropInterval) clearInterval(dropInterval);
+                initBoard();
+                score = 0;
+                lines = 0;
+                level = 1;
+                gameOver = false;
+                currentPiece = createPiece();
+                const speed = 500;
+                dropInterval = setInterval(dropPiece, speed);
+                updateInfo();
+                drawNext();
+                draw();
+            }
+
+            // КЛАВИШИ
+            document.addEventListener('keydown', (e) => {
+                const key = e.key;
+                if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(key)) {
+                    e.preventDefault();
+                }
+                if (key === 'ArrowLeft') movePiece(-1);
+                else if (key === 'ArrowRight') movePiece(1);
+                else if (key === 'ArrowDown') dropPiece();
+                else if (key === 'ArrowUp') rotatePiece();
+                else if (key === ' ') {
+                    if (gameOver) {
+                        restartGame();
+                    } else {
+                        hardDrop();
+                    }
+                }
+            });
+
+            // СТАРТ
+            highScoreDisplay.textContent = highScore;
+            initBoard();
+            currentPiece = createPiece();
+            dropInterval = setInterval(dropPiece, 500);
+            updateInfo();
+            drawNext();
+            draw();
+        })();
+
+        // ---- 1. ФОН: ПАРТИКЛЫ ----
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 30; i++) {
+            const p = document.createElement('div');
+            p.classList.add('particle');
+            p.style.left = Math.random() * 100 + '%';
+            p.style.width = (Math.random() * 5 + 2) + 'px';
+            p.style.height = p.style.width;
+            p.style.animationDuration = (Math.random() * 12 + 8) + 's';
+            p.style.animationDelay = (Math.random() * 10) + 's';
+            p.style.opacity = Math.random() * 0.4 + 0.1;
+            particlesContainer.appendChild(p);
+        }
+
+        // ---- 2. ПРИВЕТСТВИЕ ----
+        console.log('🔥 nitroasus - Artist & Developer');
+        console.log('🎵 Слушай треки и играй в игры!');
+        console.log('⬛ Тетрис справа — играй на клавишах!');
+    </script>
+
+</body>
+</html>
