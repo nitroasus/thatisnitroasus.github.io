@@ -14,6 +14,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            cursor: none; /* Убираем стандартный курсор */
         }
 
         body {
@@ -22,6 +23,57 @@
             color: #e0e0e0;
             min-height: 100vh;
             padding: 30px 20px;
+        }
+
+        /* ---------- КАСТОМНЫЙ КУРСОР ---------- */
+        .custom-cursor {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            width: 32px;
+            height: 32px;
+            border: 2px solid #cc0000;
+            border-radius: 50%;
+            background: rgba(204, 0, 0, 0.1);
+            box-shadow: 0 0 20px rgba(204, 0, 0, 0.4), inset 0 0 20px rgba(204, 0, 0, 0.1);
+            transition: width 0.15s ease, height 0.15s ease, background 0.15s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .custom-cursor .dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 4px;
+            height: 4px;
+            background: #cc0000;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 15px rgba(204, 0, 0, 0.8);
+        }
+
+        /* При наведении на кнопки курсор увеличивается */
+        .custom-cursor.hover {
+            width: 48px;
+            height: 48px;
+            background: rgba(204, 0, 0, 0.2);
+            border-color: #ff3333;
+            box-shadow: 0 0 40px rgba(204, 0, 0, 0.6), inset 0 0 40px rgba(204, 0, 0, 0.2);
+        }
+
+        .custom-cursor.hover .dot {
+            width: 6px;
+            height: 6px;
+            background: #ff3333;
+            box-shadow: 0 0 25px rgba(204, 0, 0, 0.9);
+        }
+
+        /* При клике курсор сжимается */
+        .custom-cursor.click {
+            width: 20px;
+            height: 20px;
+            background: rgba(204, 0, 0, 0.3);
+            border-color: #ff6666;
         }
 
         /* ---------- ОСНОВНОЙ КОНТЕЙНЕР С FLEX ---------- */
@@ -180,6 +232,140 @@
             text-shadow: 0 0 10px rgba(204, 0, 0, 0.3);
         }
 
+        /* ---------- GLITCH-ЭФФЕКТ ДЛЯ ЗАГОЛОВКА ---------- */
+        .glitch-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .glitch-text {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 42px;
+            font-weight: 400;
+            background: linear-gradient(135deg, #ff1a1a, #cc0000, #ff3333);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            position: relative;
+            display: inline-block;
+            animation: glitch-skew 4s infinite linear alternate-reverse;
+        }
+
+        .glitch-text::before,
+        .glitch-text::after {
+            content: 'nitroasus';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff1a1a, #cc0000, #ff3333);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            clip-path: inset(0 0 0 0);
+            pointer-events: none;
+        }
+
+        .glitch-text::before {
+            animation: glitch-anim 3s infinite linear alternate-reverse;
+            clip-path: inset(20% 0 60% 0);
+            -webkit-clip-path: inset(20% 0 60% 0);
+        }
+
+        .glitch-text::after {
+            animation: glitch-anim2 2.5s infinite linear alternate-reverse;
+            clip-path: inset(60% 0 10% 0);
+            -webkit-clip-path: inset(60% 0 10% 0);
+        }
+
+        @keyframes glitch-anim {
+            0% {
+                clip-path: inset(10% 0 70% 0);
+                -webkit-clip-path: inset(10% 0 70% 0);
+                transform: translate(-3px, 0);
+            }
+            20% {
+                clip-path: inset(50% 0 30% 0);
+                -webkit-clip-path: inset(50% 0 30% 0);
+                transform: translate(3px, 0);
+            }
+            40% {
+                clip-path: inset(30% 0 50% 0);
+                -webkit-clip-path: inset(30% 0 50% 0);
+                transform: translate(-2px, 0);
+            }
+            60% {
+                clip-path: inset(70% 0 10% 0);
+                -webkit-clip-path: inset(70% 0 10% 0);
+                transform: translate(2px, 0);
+            }
+            80% {
+                clip-path: inset(5% 0 80% 0);
+                -webkit-clip-path: inset(5% 0 80% 0);
+                transform: translate(-4px, 0);
+            }
+            100% {
+                clip-path: inset(40% 0 40% 0);
+                -webkit-clip-path: inset(40% 0 40% 0);
+                transform: translate(4px, 0);
+            }
+        }
+
+        @keyframes glitch-anim2 {
+            0% {
+                clip-path: inset(60% 0 20% 0);
+                -webkit-clip-path: inset(60% 0 20% 0);
+                transform: translate(4px, 0);
+            }
+            25% {
+                clip-path: inset(20% 0 60% 0);
+                -webkit-clip-path: inset(20% 0 60% 0);
+                transform: translate(-4px, 0);
+            }
+            50% {
+                clip-path: inset(80% 0 5% 0);
+                -webkit-clip-path: inset(80% 0 5% 0);
+                transform: translate(2px, 0);
+            }
+            75% {
+                clip-path: inset(40% 0 40% 0);
+                -webkit-clip-path: inset(40% 0 40% 0);
+                transform: translate(-2px, 0);
+            }
+            100% {
+                clip-path: inset(10% 0 70% 0);
+                -webkit-clip-path: inset(10% 0 70% 0);
+                transform: translate(3px, 0);
+            }
+        }
+
+        @keyframes glitch-skew {
+            0% {
+                transform: skew(0deg);
+            }
+            10% {
+                transform: skew(1deg);
+            }
+            20% {
+                transform: skew(-0.5deg);
+            }
+            30% {
+                transform: skew(0.5deg);
+            }
+            40% {
+                transform: skew(-1deg);
+            }
+            50% {
+                transform: skew(0deg);
+            }
+            100% {
+                transform: skew(0deg);
+            }
+        }
+
         /* ---------- ФОН: СВЕТЯЩИЕСЯ ТОЧКИ ---------- */
         .bg-particles {
             position: fixed;
@@ -252,13 +438,51 @@
             font-family: 'Press Start 2P', monospace;
             font-size: 42px;
             font-weight: 400;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+
+        h1 .glitch-text {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 42px;
+            font-weight: 400;
             background: linear-gradient(135deg, #ff1a1a, #cc0000, #ff3333);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             letter-spacing: 4px;
             text-transform: uppercase;
-            text-shadow: 0 0 30px rgba(204, 0, 0, 0.3);
+            display: inline-block;
+            animation: glitch-skew 4s infinite linear alternate-reverse;
+            position: relative;
+        }
+
+        h1 .glitch-text::before,
+        h1 .glitch-text::after {
+            content: 'nitroasus';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff1a1a, #cc0000, #ff3333);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            pointer-events: none;
+        }
+
+        h1 .glitch-text::before {
+            animation: glitch-anim 3s infinite linear alternate-reverse;
+            clip-path: inset(20% 0 60% 0);
+            -webkit-clip-path: inset(20% 0 60% 0);
+        }
+
+        h1 .glitch-text::after {
+            animation: glitch-anim2 2.5s infinite linear alternate-reverse;
+            clip-path: inset(60% 0 10% 0);
+            -webkit-clip-path: inset(60% 0 10% 0);
         }
 
         .tagline {
@@ -652,6 +876,50 @@
             min-width: 50px;
         }
 
+        /* ---------- ВЫБОР СТРАНЫ ---------- */
+        .country-selector {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 11px;
+            color: #666;
+            padding: 10px 0 5px;
+            border-top: 1px solid #1a1a1a;
+            margin-top: 10px;
+        }
+
+        .country-selector select {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 10px;
+            background: #0f0f0f;
+            color: #888;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            padding: 6px 12px;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.3s ease;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23666'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 30px;
+        }
+
+        .country-selector select:hover {
+            border-color: #cc0000;
+            color: #cc0000;
+        }
+
+        .country-selector select:focus {
+            border-color: #cc0000;
+            box-shadow: 0 0 20px rgba(204, 0, 0, 0.1);
+        }
+
+        .country-selector select option {
+            background: #1a1a1a;
+            color: #e0e0e0;
+        }
+
         .social-links {
             display: flex;
             justify-content: center;
@@ -707,7 +975,9 @@
         }
 
         @media (max-width: 700px) {
-            h1 { font-size: 28px; }
+            h1 .glitch-text {
+                font-size: 28px;
+            }
             section { padding: 25px 20px; }
             .grid { grid-template-columns: 1fr; }
             .section-title { font-size: 18px; }
@@ -740,10 +1010,23 @@
                 font-size: 11px;
                 padding: 12px 16px;
             }
+            .country-selector {
+                font-size: 9px;
+            }
+            .country-selector select {
+                font-size: 8px;
+                padding: 4px 10px;
+                padding-right: 24px;
+            }
         }
     </style>
 </head>
 <body>
+
+    <!-- ---------- КАСТОМНЫЙ КУРСОР ---------- -->
+    <div class="custom-cursor" id="customCursor">
+        <div class="dot"></div>
+    </div>
 
     <!-- ---------- ФОН ---------- -->
     <div class="bg-particles" id="particles"></div>
@@ -756,7 +1039,9 @@
             <div class="avatar">
                 <img src="avatar.jpg" alt="nitroasus" />
             </div>
-            <h1>nitroasus</h1>
+            <h1>
+                <span class="glitch-text">nitroasus</span>
+            </h1>
             <div class="tagline"><span>✦</span> artist / developer <span>✦</span></div>
             
             <!-- ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКОВ -->
@@ -967,6 +1252,207 @@
                 🧟 <span class="i18n" data-key="visit_label">ВИЗИТОВ</span>: <span class="number" id="visitCount">000</span>
             </div>
 
+            <!-- ===== ВЫБОР СТРАНЫ ===== -->
+            <div class="country-selector">
+                <span>🌍</span>
+                <select id="countrySelect">
+                    <option value="af">🇦🇫 Afghanistan</option>
+                    <option value="al">🇦🇱 Albania</option>
+                    <option value="dz">🇩🇿 Algeria</option>
+                    <option value="ad">🇦🇩 Andorra</option>
+                    <option value="ao">🇦🇴 Angola</option>
+                    <option value="ag">🇦🇬 Antigua and Barbuda</option>
+                    <option value="ar">🇦🇷 Argentina</option>
+                    <option value="am">🇦🇲 Armenia</option>
+                    <option value="au">🇦🇺 Australia</option>
+                    <option value="at">🇦🇹 Austria</option>
+                    <option value="az">🇦🇿 Azerbaijan</option>
+                    <option value="bs">🇧🇸 Bahamas</option>
+                    <option value="bh">🇧🇭 Bahrain</option>
+                    <option value="bd">🇧🇩 Bangladesh</option>
+                    <option value="bb">🇧🇧 Barbados</option>
+                    <option value="by">🇧🇾 Belarus</option>
+                    <option value="be">🇧🇪 Belgium</option>
+                    <option value="bz">🇧🇿 Belize</option>
+                    <option value="bj">🇧🇯 Benin</option>
+                    <option value="bt">🇧🇹 Bhutan</option>
+                    <option value="bo">🇧🇴 Bolivia</option>
+                    <option value="ba">🇧🇦 Bosnia and Herzegovina</option>
+                    <option value="bw">🇧🇼 Botswana</option>
+                    <option value="br">🇧🇷 Brazil</option>
+                    <option value="bn">🇧🇳 Brunei</option>
+                    <option value="bg">🇧🇬 Bulgaria</option>
+                    <option value="bf">🇧🇫 Burkina Faso</option>
+                    <option value="bi">🇧🇮 Burundi</option>
+                    <option value="kh">🇰🇭 Cambodia</option>
+                    <option value="cm">🇨🇲 Cameroon</option>
+                    <option value="ca">🇨🇦 Canada</option>
+                    <option value="cv">🇨🇻 Cape Verde</option>
+                    <option value="cf">🇨🇫 Central African Republic</option>
+                    <option value="td">🇹🇩 Chad</option>
+                    <option value="cl">🇨🇱 Chile</option>
+                    <option value="cn">🇨🇳 China</option>
+                    <option value="co">🇨🇴 Colombia</option>
+                    <option value="km">🇰🇲 Comoros</option>
+                    <option value="cg">🇨🇬 Congo</option>
+                    <option value="cd">🇨🇩 DR Congo</option>
+                    <option value="cr">🇨🇷 Costa Rica</option>
+                    <option value="hr">🇭🇷 Croatia</option>
+                    <option value="cu">🇨🇺 Cuba</option>
+                    <option value="cy">🇨🇾 Cyprus</option>
+                    <option value="cz">🇨🇿 Czechia</option>
+                    <option value="dk">🇩🇰 Denmark</option>
+                    <option value="dj">🇩🇯 Djibouti</option>
+                    <option value="dm">🇩🇲 Dominica</option>
+                    <option value="do">🇩🇴 Dominican Republic</option>
+                    <option value="ec">🇪🇨 Ecuador</option>
+                    <option value="eg">🇪🇬 Egypt</option>
+                    <option value="sv">🇸🇻 El Salvador</option>
+                    <option value="gq">🇬🇶 Equatorial Guinea</option>
+                    <option value="er">🇪🇷 Eritrea</option>
+                    <option value="ee">🇪🇪 Estonia</option>
+                    <option value="sz">🇸🇿 Eswatini</option>
+                    <option value="et">🇪🇹 Ethiopia</option>
+                    <option value="fj">🇫🇯 Fiji</option>
+                    <option value="fi">🇫🇮 Finland</option>
+                    <option value="fr">🇫🇷 France</option>
+                    <option value="ga">🇬🇦 Gabon</option>
+                    <option value="gm">🇬🇲 Gambia</option>
+                    <option value="ge">🇬🇪 Georgia</option>
+                    <option value="de">🇩🇪 Germany</option>
+                    <option value="gh">🇬🇭 Ghana</option>
+                    <option value="gr">🇬🇷 Greece</option>
+                    <option value="gd">🇬🇩 Grenada</option>
+                    <option value="gt">🇬🇹 Guatemala</option>
+                    <option value="gn">🇬🇳 Guinea</option>
+                    <option value="gw">🇬🇼 Guinea-Bissau</option>
+                    <option value="gy">🇬🇾 Guyana</option>
+                    <option value="ht">🇭🇹 Haiti</option>
+                    <option value="hn">🇭🇳 Honduras</option>
+                    <option value="hu">🇭🇺 Hungary</option>
+                    <option value="is">🇮🇸 Iceland</option>
+                    <option value="in">🇮🇳 India</option>
+                    <option value="id">🇮🇩 Indonesia</option>
+                    <option value="ir">🇮🇷 Iran</option>
+                    <option value="iq">🇮🇶 Iraq</option>
+                    <option value="ie">🇮🇪 Ireland</option>
+                    <option value="il">🇮🇱 Israel</option>
+                    <option value="it">🇮🇹 Italy</option>
+                    <option value="jm">🇯🇲 Jamaica</option>
+                    <option value="jp">🇯🇵 Japan</option>
+                    <option value="jo">🇯🇴 Jordan</option>
+                    <option value="kz">🇰🇿 Kazakhstan</option>
+                    <option value="ke">🇰🇪 Kenya</option>
+                    <option value="ki">🇰🇮 Kiribati</option>
+                    <option value="kp">🇰🇵 North Korea</option>
+                    <option value="kr">🇰🇷 South Korea</option>
+                    <option value="kw">🇰🇼 Kuwait</option>
+                    <option value="kg">🇰🇬 Kyrgyzstan</option>
+                    <option value="la">🇱🇦 Laos</option>
+                    <option value="lv">🇱🇻 Latvia</option>
+                    <option value="lb">🇱🇧 Lebanon</option>
+                    <option value="ls">🇱🇸 Lesotho</option>
+                    <option value="lr">🇱🇷 Liberia</option>
+                    <option value="ly">🇱🇾 Libya</option>
+                    <option value="li">🇱🇮 Liechtenstein</option>
+                    <option value="lt">🇱🇹 Lithuania</option>
+                    <option value="lu">🇱🇺 Luxembourg</option>
+                    <option value="mg">🇲🇬 Madagascar</option>
+                    <option value="mw">🇲🇼 Malawi</option>
+                    <option value="my">🇲🇾 Malaysia</option>
+                    <option value="mv">🇲🇻 Maldives</option>
+                    <option value="ml">🇲🇱 Mali</option>
+                    <option value="mt">🇲🇹 Malta</option>
+                    <option value="mh">🇲🇭 Marshall Islands</option>
+                    <option value="mr">🇲🇷 Mauritania</option>
+                    <option value="mu">🇲🇺 Mauritius</option>
+                    <option value="mx">🇲🇽 Mexico</option>
+                    <option value="fm">🇫🇲 Micronesia</option>
+                    <option value="md">🇲🇩 Moldova</option>
+                    <option value="mc">🇲🇨 Monaco</option>
+                    <option value="mn">🇲🇳 Mongolia</option>
+                    <option value="me">🇲🇪 Montenegro</option>
+                    <option value="ma">🇲🇦 Morocco</option>
+                    <option value="mz">🇲🇿 Mozambique</option>
+                    <option value="mm">🇲🇲 Myanmar</option>
+                    <option value="na">🇳🇦 Namibia</option>
+                    <option value="nr">🇳🇷 Nauru</option>
+                    <option value="np">🇳🇵 Nepal</option>
+                    <option value="nl">🇳🇱 Netherlands</option>
+                    <option value="nz">🇳🇿 New Zealand</option>
+                    <option value="ni">🇳🇮 Nicaragua</option>
+                    <option value="ne">🇳🇪 Niger</option>
+                    <option value="ng">🇳🇬 Nigeria</option>
+                    <option value="mk">🇲🇰 North Macedonia</option>
+                    <option value="no">🇳🇴 Norway</option>
+                    <option value="om">🇴🇲 Oman</option>
+                    <option value="pk">🇵🇰 Pakistan</option>
+                    <option value="pw">🇵🇼 Palau</option>
+                    <option value="pa">🇵🇦 Panama</option>
+                    <option value="pg">🇵🇬 Papua New Guinea</option>
+                    <option value="py">🇵🇾 Paraguay</option>
+                    <option value="pe">🇵🇪 Peru</option>
+                    <option value="ph">🇵🇭 Philippines</option>
+                    <option value="pl">🇵🇱 Poland</option>
+                    <option value="pt">🇵🇹 Portugal</option>
+                    <option value="qa">🇶🇦 Qatar</option>
+                    <option value="ro">🇷🇴 Romania</option>
+                    <option value="ru" selected>🇷🇺 Russia</option>
+                    <option value="rw">🇷🇼 Rwanda</option>
+                    <option value="kn">🇰🇳 Saint Kitts and Nevis</option>
+                    <option value="lc">🇱🇨 Saint Lucia</option>
+                    <option value="vc">🇻🇨 Saint Vincent and the Grenadines</option>
+                    <option value="ws">🇼🇸 Samoa</option>
+                    <option value="sm">🇸🇲 San Marino</option>
+                    <option value="st">🇸🇹 Sao Tome and Principe</option>
+                    <option value="sa">🇸🇦 Saudi Arabia</option>
+                    <option value="sn">🇸🇳 Senegal</option>
+                    <option value="rs">🇷🇸 Serbia</option>
+                    <option value="sc">🇸🇨 Seychelles</option>
+                    <option value="sl">🇸🇱 Sierra Leone</option>
+                    <option value="sg">🇸🇬 Singapore</option>
+                    <option value="sk">🇸🇰 Slovakia</option>
+                    <option value="si">🇸🇮 Slovenia</option>
+                    <option value="sb">🇸🇧 Solomon Islands</option>
+                    <option value="so">🇸🇴 Somalia</option>
+                    <option value="za">🇿🇦 South Africa</option>
+                    <option value="ss">🇸🇸 South Sudan</option>
+                    <option value="es">🇪🇸 Spain</option>
+                    <option value="lk">🇱🇰 Sri Lanka</option>
+                    <option value="sd">🇸🇩 Sudan</option>
+                    <option value="sr">🇸🇷 Suriname</option>
+                    <option value="se">🇸🇪 Sweden</option>
+                    <option value="ch">🇨🇭 Switzerland</option>
+                    <option value="sy">🇸🇾 Syria</option>
+                    <option value="tw">🇹🇼 Taiwan</option>
+                    <option value="tj">🇹🇯 Tajikistan</option>
+                    <option value="tz">🇹🇿 Tanzania</option>
+                    <option value="th">🇹🇭 Thailand</option>
+                    <option value="tl">🇹🇱 Timor-Leste</option>
+                    <option value="tg">🇹🇬 Togo</option>
+                    <option value="to">🇹🇴 Tonga</option>
+                    <option value="tt">🇹🇹 Trinidad and Tobago</option>
+                    <option value="tn">🇹🇳 Tunisia</option>
+                    <option value="tr">🇹🇷 Turkey</option>
+                    <option value="tm">🇹🇲 Turkmenistan</option>
+                    <option value="tv">🇹🇻 Tuvalu</option>
+                    <option value="ug">🇺🇬 Uganda</option>
+                    <option value="ua">🇺🇦 Ukraine</option>
+                    <option value="ae">🇦🇪 United Arab Emirates</option>
+                    <option value="uk">🇬🇧 United Kingdom</option>
+                    <option value="us">🇺🇸 United States</option>
+                    <option value="uy">🇺🇾 Uruguay</option>
+                    <option value="uz">🇺🇿 Uzbekistan</option>
+                    <option value="vu">🇻🇺 Vanuatu</option>
+                    <option value="va">🇻🇦 Vatican City</option>
+                    <option value="ve">🇻🇪 Venezuela</option>
+                    <option value="vn">🇻🇳 Vietnam</option>
+                    <option value="ye">🇾🇪 Yemen</option>
+                    <option value="zm">🇿🇲 Zambia</option>
+                    <option value="zw">🇿🇼 Zimbabwe</option>
+                </select>
+            </div>
+
             <div class="footer-copy">
                 <span>✦</span> © nitroasus - 2026 <span>✦</span>
             </div>
@@ -982,6 +1468,45 @@
 
     <!-- ---------- JAVASCRIPT ---------- -->
     <script>
+        // ===== КАСТОМНЫЙ КУРСОР =====
+        (function() {
+            const cursor = document.getElementById('customCursor');
+            let isHovering = false;
+
+            document.addEventListener('mousemove', function(e) {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+            });
+
+            // Эффект при наведении на кликабельные элементы
+            const hoverElements = document.querySelectorAll('a, button, select, .project-card, .lang-btn, .btn-subscribe, .btn-unsubscribe, .bio-tag, .social-links a');
+            
+            hoverElements.forEach(el => {
+                el.addEventListener('mouseenter', function() {
+                    cursor.classList.add('hover');
+                });
+                el.addEventListener('mouseleave', function() {
+                    cursor.classList.remove('hover');
+                });
+            });
+
+            // Эффект при клике
+            document.addEventListener('mousedown', function() {
+                cursor.classList.add('click');
+            });
+            document.addEventListener('mouseup', function() {
+                cursor.classList.remove('click');
+            });
+
+            // Скрываем курсор при выходе за пределы окна
+            document.addEventListener('mouseleave', function() {
+                cursor.style.opacity = '0';
+            });
+            document.addEventListener('mouseenter', function() {
+                cursor.style.opacity = '1';
+            });
+        })();
+
         // ===== СЧЁТЧИК ПОСЕЩЕНИЙ =====
         (function() {
             const visitDisplay = document.getElementById('visitCount');
@@ -1680,6 +2205,7 @@
         console.log('🔥 nitroasus - Artist & Developer');
         console.log('🌍 Мультиязычный сайт готов!');
         console.log('🧟 Счётчик посещений: ' + document.getElementById('visitCount').textContent);
+        console.log('🖱️ Кастомный курсор и Glitch-эффект активированы!');
     </script>
 
 </body>
