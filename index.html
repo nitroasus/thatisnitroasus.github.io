@@ -3,428 +3,166 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>nitroasus - artist / dev</title>
+    <title>nitroasus — artist / developer</title>
     
-    <!-- ПОДКЛЮЧАЕМ 8-БИТНЫЙ ШРИФТ -->
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+    <!-- ШРИФТЫ: Inter для текста, Press Start 2P для акцентов -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Press+Start+2P&display=swap" rel="stylesheet">
 
     <style>
+        /* ---------- ПЕРЕМЕННЫЕ ---------- */
+        :root {
+            --bg: #08080a;
+            --bg-elevated: #0f0f12;
+            --bg-card: rgba(20, 20, 24, 0.6);
+            --border: rgba(255, 255, 255, 0.06);
+            --border-hover: rgba(204, 0, 0, 0.4);
+            --text: #e8e8ec;
+            --text-dim: #8a8a94;
+            --text-mute: #55555e;
+            --red: #cc0000;
+            --red-bright: #ff2020;
+            --red-deep: #8b0000;
+            --accent-glow: rgba(204, 0, 0, 0.3);
+            --radius: 14px;
+            --radius-lg: 22px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
         /* ---------- ГЛОБАЛЬНЫЕ ---------- */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            cursor: none; /* Убираем стандартный курсор */
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #0a0a0a;
-            color: #e0e0e0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
-            padding: 30px 20px;
+            padding: 40px 24px;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
         }
 
-        /* ---------- КАСТОМНЫЙ КУРСОР ---------- */
-        .custom-cursor {
-            position: fixed;
-            pointer-events: none;
-            z-index: 9999;
-            width: 32px;
-            height: 32px;
-            border: 2px solid #cc0000;
-            border-radius: 50%;
-            background: rgba(204, 0, 0, 0.1);
-            box-shadow: 0 0 20px rgba(204, 0, 0, 0.4), inset 0 0 20px rgba(204, 0, 0, 0.1);
-            transition: width 0.15s ease, height 0.15s ease, background 0.15s ease;
-            transform: translate(-50%, -50%);
-        }
-
-        .custom-cursor .dot {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 4px;
-            height: 4px;
-            background: #cc0000;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 15px rgba(204, 0, 0, 0.8);
-        }
-
-        /* При наведении на кнопки курсор увеличивается */
-        .custom-cursor.hover {
-            width: 48px;
-            height: 48px;
-            background: rgba(204, 0, 0, 0.2);
-            border-color: #ff3333;
-            box-shadow: 0 0 40px rgba(204, 0, 0, 0.6), inset 0 0 40px rgba(204, 0, 0, 0.2);
-        }
-
-        .custom-cursor.hover .dot {
-            width: 6px;
-            height: 6px;
-            background: #ff3333;
-            box-shadow: 0 0 25px rgba(204, 0, 0, 0.9);
-        }
-
-        /* При клике курсор сжимается */
-        .custom-cursor.click {
-            width: 20px;
-            height: 20px;
-            background: rgba(204, 0, 0, 0.3);
-            border-color: #ff6666;
-        }
-
-        /* ---------- ОСНОВНОЙ КОНТЕЙНЕР С FLEX ---------- */
-        .main-layout {
-            display: flex;
-            gap: 40px;
-            max-width: 1300px;
-            margin: 0 auto;
-            align-items: flex-start;
-        }
-
-        .content {
-            flex: 1;
-            min-width: 0;
-        }
-
-        /* ---------- ТЕТРИС ---------- */
-        .tetris-side {
-            flex-shrink: 0;
-            width: 320px;
-            position: sticky;
-            top: 30px;
-        }
-
-        .tetris-container {
-            background: linear-gradient(145deg, #111111, #1a1a1a);
-            border-radius: 20px;
-            border: 1px solid #2a2a2a;
-            padding: 25px 20px 20px;
-            text-align: center;
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-
-        .tetris-container:hover {
-            border-color: #880000;
-            box-shadow: 0 0 40px rgba(136, 0, 0, 0.15);
-        }
-
-        .tetris-title {
-            font-family: 'Press Start 2P', monospace;
-            font-size: 14px;
-            color: #880000;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 15px;
-            text-shadow: 0 0 20px rgba(136, 0, 0, 0.4);
-            animation: tetrisPulse 2s ease-in-out infinite;
-        }
-
-        @keyframes tetrisPulse {
-            0%, 100% { opacity: 0.7; text-shadow: 0 0 10px rgba(136, 0, 0, 0.3); }
-            50% { opacity: 1; text-shadow: 0 0 30px rgba(136, 0, 0, 0.7); }
-        }
-
-        .tetris-wrapper {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            align-items: flex-start;
-        }
-
-        #tetrisCanvas {
-            background: #0a0a0a;
-            border: 2px solid #2a2a2a;
-            border-radius: 8px;
-            image-rendering: pixelated;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5), inset 0 0 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .tetris-info {
-            text-align: left;
-            font-family: 'Press Start 2P', monospace;
-            font-size: 10px;
-            color: #666;
-            line-height: 2;
-            min-width: 80px;
-        }
-
-        .tetris-info .label {
-            color: #444;
-            font-size: 8px;
-            letter-spacing: 1px;
-        }
-
-        .tetris-info .value {
-            color: #888;
-            font-size: 14px;
-            display: block;
-            margin-bottom: 10px;
-        }
-
-        .tetris-info .value.high {
-            color: #880000;
-            text-shadow: 0 0 15px rgba(136, 0, 0, 0.3);
-        }
-
-        .tetris-controls {
-            margin-top: 15px;
-            font-family: 'Press Start 2P', monospace;
-            font-size: 8px;
-            color: #444;
-            letter-spacing: 0.5px;
-            line-height: 2;
-            border-top: 1px solid #1a1a1a;
-            padding-top: 12px;
-        }
-
-        .tetris-controls span {
-            color: #666;
-        }
-
-        .tetris-controls .key {
-            color: #880000;
-            font-size: 10px;
-        }
-
-        /* ---------- ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКОВ ---------- */
-        .lang-switcher {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-
-        .lang-btn {
-            font-family: 'Press Start 2P', monospace;
-            font-size: 10px;
-            background: transparent;
-            border: 1px solid #2a2a2a;
-            color: #666;
-            padding: 6px 14px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .lang-btn:hover {
-            border-color: #cc0000;
-            color: #cc0000;
-        }
-
-        .lang-btn.active {
-            border-color: #cc0000;
-            background: #cc0000;
-            color: #0a0a0a;
-            box-shadow: 0 0 20px rgba(204, 0, 0, 0.3);
-        }
-
-        /* ---------- 8-БИТНЫЙ СТИЛЬ ---------- */
-        .pixel-font {
-            font-family: 'Press Start 2P', monospace;
-            letter-spacing: 1px;
-            text-shadow: 0 0 10px rgba(204, 0, 0, 0.3);
-        }
-
-        /* ---------- GLITCH-ЭФФЕКТ ДЛЯ ЗАГОЛОВКА ---------- */
-        .glitch-wrapper {
-            position: relative;
-            display: inline-block;
-        }
-
-        .glitch-text {
-            font-family: 'Press Start 2P', monospace;
-            font-size: 42px;
-            font-weight: 400;
-            background: linear-gradient(135deg, #ff1a1a, #cc0000, #ff3333);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            position: relative;
-            display: inline-block;
-            animation: glitch-skew 4s infinite linear alternate-reverse;
-        }
-
-        .glitch-text::before,
-        .glitch-text::after {
-            content: 'nitroasus';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #ff1a1a, #cc0000, #ff3333);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            clip-path: inset(0 0 0 0);
-            pointer-events: none;
-        }
-
-        .glitch-text::before {
-            animation: glitch-anim 3s infinite linear alternate-reverse;
-            clip-path: inset(20% 0 60% 0);
-            -webkit-clip-path: inset(20% 0 60% 0);
-        }
-
-        .glitch-text::after {
-            animation: glitch-anim2 2.5s infinite linear alternate-reverse;
-            clip-path: inset(60% 0 10% 0);
-            -webkit-clip-path: inset(60% 0 10% 0);
-        }
-
-        @keyframes glitch-anim {
-            0% {
-                clip-path: inset(10% 0 70% 0);
-                -webkit-clip-path: inset(10% 0 70% 0);
-                transform: translate(-3px, 0);
-            }
-            20% {
-                clip-path: inset(50% 0 30% 0);
-                -webkit-clip-path: inset(50% 0 30% 0);
-                transform: translate(3px, 0);
-            }
-            40% {
-                clip-path: inset(30% 0 50% 0);
-                -webkit-clip-path: inset(30% 0 50% 0);
-                transform: translate(-2px, 0);
-            }
-            60% {
-                clip-path: inset(70% 0 10% 0);
-                -webkit-clip-path: inset(70% 0 10% 0);
-                transform: translate(2px, 0);
-            }
-            80% {
-                clip-path: inset(5% 0 80% 0);
-                -webkit-clip-path: inset(5% 0 80% 0);
-                transform: translate(-4px, 0);
-            }
-            100% {
-                clip-path: inset(40% 0 40% 0);
-                -webkit-clip-path: inset(40% 0 40% 0);
-                transform: translate(4px, 0);
-            }
-        }
-
-        @keyframes glitch-anim2 {
-            0% {
-                clip-path: inset(60% 0 20% 0);
-                -webkit-clip-path: inset(60% 0 20% 0);
-                transform: translate(4px, 0);
-            }
-            25% {
-                clip-path: inset(20% 0 60% 0);
-                -webkit-clip-path: inset(20% 0 60% 0);
-                transform: translate(-4px, 0);
-            }
-            50% {
-                clip-path: inset(80% 0 5% 0);
-                -webkit-clip-path: inset(80% 0 5% 0);
-                transform: translate(2px, 0);
-            }
-            75% {
-                clip-path: inset(40% 0 40% 0);
-                -webkit-clip-path: inset(40% 0 40% 0);
-                transform: translate(-2px, 0);
-            }
-            100% {
-                clip-path: inset(10% 0 70% 0);
-                -webkit-clip-path: inset(10% 0 70% 0);
-                transform: translate(3px, 0);
-            }
-        }
-
-        @keyframes glitch-skew {
-            0% {
-                transform: skew(0deg);
-            }
-            10% {
-                transform: skew(1deg);
-            }
-            20% {
-                transform: skew(-0.5deg);
-            }
-            30% {
-                transform: skew(0.5deg);
-            }
-            40% {
-                transform: skew(-1deg);
-            }
-            50% {
-                transform: skew(0deg);
-            }
-            100% {
-                transform: skew(0deg);
-            }
-        }
-
-        /* ---------- ФОН: СВЕТЯЩИЕСЯ ТОЧКИ ---------- */
-        .bg-particles {
+        /* Тонкая сетка на фоне */
+        body::before {
+            content: '';
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            background-image: 
+                linear-gradient(rgba(204, 0, 0, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(204, 0, 0, 0.015) 1px, transparent 1px);
+            background-size: 60px 60px;
             pointer-events: none;
             z-index: 0;
-            overflow: hidden;
         }
 
-        .particle {
-            position: absolute;
-            border-radius: 50%;
-            background: #cc0000;
-            box-shadow: 0 0 10px #cc0000;
-            animation: float linear infinite;
-            opacity: 0.4;
+        /* Мягкое свечение сверху */
+        body::after {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 80%;
+            background: radial-gradient(ellipse at center, rgba(204, 0, 0, 0.08) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
         }
 
-        @keyframes float {
-            0% {
-                transform: translateY(100vh) translateX(0) scale(0.3);
-                opacity: 0;
-            }
-            20% { opacity: 0.5; }
-            80% { opacity: 0.5; }
-            100% {
-                transform: translateY(-10vh) translateX(60px) scale(1.2);
-                opacity: 0;
-            }
+        /* ---------- СКРОЛЛБАР ---------- */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--red-deep);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--red);
         }
 
-        /* ---------- ОБЩИЙ КОНТЕЙНЕР ---------- */
-        .wrapper {
-            max-width: 1100px;
+        /* ---------- СЕТКА ---------- */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 32px;
+            max-width: 1360px;
             margin: 0 auto;
+            align-items: start;
             position: relative;
             z-index: 1;
         }
 
+        .content {
+            min-width: 0;
+        }
+
         /* ---------- ШАПКА ---------- */
         header {
+            grid-column: 1 / -1;
+            padding: 60px 0 50px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 40px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-align: center;
-            padding: 40px 20px 30px;
-            border-bottom: 2px solid #1a1a1a;
-            margin-bottom: 50px;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--red), transparent);
         }
 
         .avatar {
-            width: 120px;
-            height: 120px;
+            width: 130px;
+            height: 130px;
             border-radius: 50%;
-            margin: 0 auto 20px;
-            box-shadow: 0 0 60px rgba(204, 0, 0, 0.3);
-            border: 3px solid #cc0000;
+            margin-bottom: 28px;
+            border: 2px solid var(--border);
             overflow: hidden;
-            background: #1a1a1a;
+            background: var(--bg-elevated);
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .avatar::before {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, transparent, var(--red), transparent, var(--red-deep), transparent);
+            z-index: -1;
+            opacity: 0.6;
+            animation: rotate 8s linear infinite;
+        }
+
+        @keyframes rotate {
+            to { transform: rotate(360deg); }
         }
 
         .avatar img {
@@ -432,124 +170,183 @@
             height: 100%;
             object-fit: cover;
             display: block;
+            filter: contrast(1.05) saturate(0.9);
+            transition: var(--transition);
+        }
+
+        .avatar:hover img {
+            filter: contrast(1.15) saturate(1.1);
+            transform: scale(1.05);
         }
 
         h1 {
-            font-family: 'Press Start 2P', monospace;
-            font-size: 42px;
-            font-weight: 400;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            display: inline-block;
-        }
-
-        h1 .glitch-text {
-            font-family: 'Press Start 2P', monospace;
-            font-size: 42px;
-            font-weight: 400;
-            background: linear-gradient(135deg, #ff1a1a, #cc0000, #ff3333);
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(38px, 7vw, 68px);
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            line-height: 1;
+            text-transform: lowercase;
+            background: linear-gradient(180deg, #fff 0%, #a0a0a8 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            display: inline-block;
-            animation: glitch-skew 4s infinite linear alternate-reverse;
+            margin-bottom: 16px;
             position: relative;
         }
 
-        h1 .glitch-text::before,
-        h1 .glitch-text::after {
+        h1::after {
             content: 'nitroasus';
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #ff1a1a, #cc0000, #ff3333);
+            background: linear-gradient(180deg, var(--red-bright) 0%, var(--red-deep) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            pointer-events: none;
+            opacity: 0;
+            animation: glitchFlash 6s infinite;
         }
 
-        h1 .glitch-text::before {
-            animation: glitch-anim 3s infinite linear alternate-reverse;
-            clip-path: inset(20% 0 60% 0);
-            -webkit-clip-path: inset(20% 0 60% 0);
-        }
-
-        h1 .glitch-text::after {
-            animation: glitch-anim2 2.5s infinite linear alternate-reverse;
-            clip-path: inset(60% 0 10% 0);
-            -webkit-clip-path: inset(60% 0 10% 0);
+        @keyframes glitchFlash {
+            0%, 92%, 100% { opacity: 0; transform: translate(0, 0); }
+            93% { opacity: 0.8; transform: translate(-2px, 1px); }
+            94% { opacity: 0; transform: translate(0, 0); }
+            95% { opacity: 0.6; transform: translate(2px, -1px); }
+            96% { opacity: 0; transform: translate(0, 0); }
         }
 
         .tagline {
-            font-family: 'Press Start 2P', monospace;
+            font-family: 'Inter', sans-serif;
             font-size: 14px;
-            color: #888;
-            letter-spacing: 3px;
-            margin-top: 12px;
+            color: var(--text-dim);
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .tagline .dot {
+            width: 5px;
+            height: 5px;
+            background: var(--red);
+            border-radius: 50%;
+            box-shadow: 0 0 12px var(--red);
+        }
+
+        /* ---------- ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКОВ ---------- */
+        .lang-switcher {
+            display: flex;
+            gap: 8px;
+            margin-top: 32px;
+            padding: 5px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            backdrop-filter: blur(12px);
+        }
+
+        .lang-btn {
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            padding: 8px 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            letter-spacing: 0.05em;
             text-transform: uppercase;
         }
 
-        .tagline span { color: #cc0000; }
+        .lang-btn:hover {
+            color: var(--text);
+        }
+
+        .lang-btn.active {
+            background: var(--red);
+            color: #fff;
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
 
         /* ---------- СЕКЦИИ ---------- */
         section {
-            background: linear-gradient(145deg, #111111, #1a1a1a);
-            border-radius: 20px;
-            border: 1px solid #2a2a2a;
-            padding: 40px 45px;
-            margin-bottom: 40px;
-            transition: border-color 0.3s, box-shadow 0.3s;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 36px 40px;
+            margin-bottom: 24px;
+            backdrop-filter: blur(12px);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
         }
 
         section:hover {
-            border-color: #cc0000;
-            box-shadow: 0 0 40px rgba(204, 0, 0, 0.05);
+            border-color: var(--border-hover);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(204, 0, 0, 0.05);
         }
 
         .section-title {
-            font-family: 'Press Start 2P', monospace;
-            font-size: 22px;
-            font-weight: 400;
-            color: #cc0000;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-dim);
             text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 25px;
+            letter-spacing: 0.18em;
+            margin-bottom: 28px;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 14px;
         }
 
-        .section-title .icon { font-size: 28px; }
+        .section-title .num {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 10px;
+            color: var(--red);
+            opacity: 0.7;
+        }
 
         .section-title::after {
             content: '';
             flex: 1;
-            height: 2px;
-            background: linear-gradient(to right, #cc0000, transparent);
+            height: 1px;
+            background: linear-gradient(to right, var(--border), transparent);
         }
 
         /* ---------- СЕТКА КАРТОЧЕК ---------- */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 16px;
         }
 
-        /* ---------- КАРТОЧКА ПРОЕКТА ---------- */
+        /* ---------- КАРТОЧКА ---------- */
         .project-card {
-            background: #0f0f0f;
-            border-radius: 16px;
-            padding: 25px 20px;
-            border: 1px solid #222;
-            transition: all 0.3s ease;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px 22px;
             text-decoration: none;
-            color: #e0e0e0;
-            display: block;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
             position: relative;
             overflow: hidden;
         }
@@ -559,395 +356,508 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
+            width: 3px;
             height: 100%;
-            background: linear-gradient(135deg, rgba(204, 0, 0, 0.05), transparent);
-            opacity: 0;
-            transition: opacity 0.3s;
+            background: var(--red);
+            transform: scaleY(0);
+            transform-origin: top;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .project-card:hover {
-            border-color: #cc0000;
-            transform: translateY(-6px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 30px rgba(204, 0, 0, 0.1);
+            border-color: var(--border-hover);
+            transform: translateY(-4px);
+            background: rgba(30, 30, 36, 0.8);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(204, 0, 0, 0.08);
         }
 
-        .project-card:hover::before { opacity: 1; }
+        .project-card:hover::before {
+            transform: scaleY(1);
+        }
 
         .project-card .emoji {
-            font-size: 36px;
-            margin-bottom: 12px;
+            font-size: 26px;
+            margin-bottom: 16px;
             display: block;
+            filter: grayscale(0.3);
+            transition: var(--transition);
+        }
+
+        .project-card:hover .emoji {
+            filter: grayscale(0);
+            transform: scale(1.1);
         }
 
         .project-card h3 {
-            font-family: 'Press Start 2P', monospace;
-            font-size: 14px;
-            font-weight: 400;
-            margin-bottom: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 6px;
             color: #fff;
-            letter-spacing: 0.5px;
-            line-height: 1.6;
+            letter-spacing: -0.01em;
+            line-height: 1.3;
         }
 
         .project-card .desc {
             font-size: 13px;
-            color: #999;
+            color: var(--text-dim);
             line-height: 1.5;
-            letter-spacing: 0.5px;
+            margin-bottom: 18px;
+            flex: 1;
         }
 
         .project-card .badge {
-            display: inline-block;
-            margin-top: 12px;
-            font-family: 'Press Start 2P', monospace;
-            font-size: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #cc0000;
-            border: 1px solid #cc0000;
-            padding: 4px 14px;
-            border-radius: 20px;
-            transition: all 0.3s;
+            letter-spacing: 0.1em;
+            color: var(--red);
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+            transition: var(--transition);
         }
 
         .project-card:hover .badge {
-            background: #cc0000;
-            color: #0a0a0a;
+            color: var(--red-bright);
+            letter-spacing: 0.15em;
         }
 
         .project-card.track .badge {
-            color: #ff4444;
-            border-color: #ff4444;
+            color: var(--red);
         }
 
-        .project-card.track:hover .badge {
-            background: #ff4444;
-            color: #0a0a0a;
-        }
-
-        /* ---------- БИОГРАФИЯ ---------- */
+        /* ---------- БИОГРАФИЯ / ТЕКСТ ---------- */
         .bio-text {
-            font-size: 18px;
+            font-size: 16px;
             line-height: 1.8;
-            color: #bbbbbb;
-            max-width: 700px;
+            color: var(--text-dim);
+            max-width: 720px;
         }
 
-        .bio-text strong { color: #ff3333; }
+        .bio-text strong {
+            color: var(--text);
+            font-weight: 600;
+        }
 
         .bio-text .highlight {
-            color: #cc0000;
+            color: var(--red-bright);
             font-weight: 600;
         }
 
         .bio-text .date {
-            color: #ff4444;
+            color: var(--red);
+            font-weight: 500;
         }
 
         .bio-tags {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 20px;
+            gap: 8px;
+            margin-top: 24px;
         }
 
         .bio-tag {
-            font-family: 'Press Start 2P', monospace;
-            font-size: 11px;
-            background: #1a1a1a;
-            border: 1px solid #2a2a2a;
-            padding: 6px 16px;
-            border-radius: 30px;
-            color: #aaa;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            padding: 7px 16px;
+            border-radius: 50px;
+            color: var(--text-dim);
+            letter-spacing: 0.03em;
+            transition: var(--transition);
         }
 
         .bio-tag:hover {
-            border-color: #cc0000;
-            color: #cc0000;
+            border-color: var(--border-hover);
+            color: var(--text);
+            background: rgba(204, 0, 0, 0.05);
         }
 
-        /* ---------- КНОПКА ОТПИСКИ ---------- */
-        .btn-unsubscribe {
-            font-family: 'Press Start 2P', monospace;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            padding: 16px 30px;
-            background: transparent;
-            color: #880000;
-            border: 2px solid #880000;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 700;
-            margin-top: 5px;
-        }
-
-        .btn-unsubscribe:hover {
-            background: #880000;
-            color: #0a0a0a;
-            box-shadow: 0 0 30px rgba(136, 0, 0, 0.3);
-            transform: scale(1.02);
-        }
-
-        .btn-unsubscribe:active {
-            transform: scale(0.97);
-        }
-
-        /* ---------- ФОРМА ПОДПИСКИ (EMAIL) ---------- */
+        /* ---------- ФОРМА ПОДПИСКИ ---------- */
         .subscribe-form {
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            max-width: 450px;
-        }
-
-        .subscribe-form .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
+            gap: 16px;
+            max-width: 480px;
         }
 
         .subscribe-form label {
-            font-family: 'Press Start 2P', monospace;
-            font-size: 11px;
-            color: #888;
-            letter-spacing: 1px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-dim);
+            letter-spacing: 0.1em;
             text-transform: uppercase;
         }
 
-        .subscribe-form input {
-            background: #0f0f0f;
-            border: 1px solid #2a2a2a;
-            border-radius: 12px;
-            padding: 14px 18px;
-            color: #e0e0e0;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            outline: none;
-            font-family: inherit;
-            width: 100%;
-        }
-
-        .subscribe-form input:focus {
-            border-color: #cc0000;
-            box-shadow: 0 0 25px rgba(204, 0, 0, 0.1);
-        }
-
-        .subscribe-form input::placeholder {
-            color: #444;
-            font-size: 14px;
-        }
-
-        .subscribe-form .email-input-wrap {
+        .email-input-wrap {
             display: flex;
             align-items: center;
-            background: #0f0f0f;
-            border: 1px solid #2a2a2a;
-            border-radius: 12px;
-            transition: all 0.3s ease;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            transition: var(--transition);
             overflow: hidden;
         }
 
-        .subscribe-form .email-input-wrap:focus-within {
-            border-color: #cc0000;
-            box-shadow: 0 0 25px rgba(204, 0, 0, 0.1);
+        .email-input-wrap:focus-within {
+            border-color: var(--border-hover);
+            box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.1);
         }
 
-        .subscribe-form .email-input-wrap .prefix {
-            font-family: 'Press Start 2P', monospace;
-            font-size: 14px;
-            color: #666;
-            padding: 14px 12px 14px 18px;
-            border-right: 1px solid #1a1a1a;
-            background: #0a0a0a;
+        .email-input-wrap .prefix {
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-mute);
+            padding: 15px 16px;
+            border-right: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.3);
             user-select: none;
         }
 
-        .subscribe-form .email-input-wrap input {
-            border: none;
-            border-radius: 0;
+        .email-input-wrap input {
             flex: 1;
-            padding: 14px 18px 14px 12px;
             background: transparent;
-        }
-
-        .subscribe-form .email-input-wrap input:focus {
-            box-shadow: none;
-        }
-
-        .subscribe-form .btn-subscribe {
-            font-family: 'Press Start 2P', monospace;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            padding: 16px 30px;
-            background: linear-gradient(135deg, #cc0000, #880000);
-            color: #0a0a0a;
             border: none;
-            border-radius: 12px;
+            outline: none;
+            color: var(--text);
+            font-size: 15px;
+            font-family: inherit;
+            padding: 15px 18px;
+        }
+
+        .email-input-wrap input::placeholder {
+            color: var(--text-mute);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-subscribe,
+        .btn-unsubscribe {
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 15px 32px;
+            border-radius: var(--radius);
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 700;
-            margin-top: 5px;
-            box-shadow: 0 0 30px rgba(204, 0, 0, 0.2);
+            transition: var(--transition);
+            border: none;
+            flex: 1;
+            min-width: 180px;
         }
 
-        .subscribe-form .btn-subscribe:hover {
-            transform: scale(1.02);
-            box-shadow: 0 0 50px rgba(204, 0, 0, 0.4);
+        .btn-subscribe {
+            background: var(--red);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(204, 0, 0, 0.25);
         }
 
-        .subscribe-form .btn-subscribe:active {
-            transform: scale(0.97);
+        .btn-subscribe:hover {
+            background: var(--red-bright);
+            box-shadow: 0 6px 30px rgba(204, 0, 0, 0.4);
+            transform: translateY(-2px);
         }
 
-        .subscribe-form .btn-subscribe.subscribed {
-            background: linear-gradient(135deg, #00aa44, #007733);
-            box-shadow: 0 0 30px rgba(0, 170, 68, 0.3);
+        .btn-subscribe:active {
+            transform: translateY(0);
         }
 
-        .subscribe-form .btn-subscribe.subscribed:hover {
-            box-shadow: 0 0 50px rgba(0, 170, 68, 0.5);
+        .btn-subscribe.subscribed {
+            background: #0a7a3a;
+            box-shadow: 0 4px 20px rgba(10, 122, 58, 0.25);
         }
 
-        .subscribe-form .form-message {
+        .btn-subscribe.subscribed:hover {
+            background: #0d9a4a;
+            box-shadow: 0 6px 30px rgba(10, 122, 58, 0.4);
+        }
+
+        .btn-unsubscribe {
+            background: transparent;
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+        }
+
+        .btn-unsubscribe:hover {
+            border-color: var(--red);
+            color: var(--red-bright);
+            background: rgba(204, 0, 0, 0.05);
+        }
+
+        .form-message {
+            font-size: 13px;
+            color: var(--text-mute);
+            min-height: 20px;
+            line-height: 1.6;
+            transition: var(--transition);
+        }
+
+        .form-message.success {
+            color: #0d9a4a;
+        }
+
+        .form-message.error {
+            color: var(--red-bright);
+        }
+
+        /* ---------- ТЕТРИС ---------- */
+        .tetris-side {
+            position: sticky;
+            top: 32px;
+        }
+
+        .tetris-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 28px 24px 22px;
+            backdrop-filter: blur(12px);
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .tetris-container:hover {
+            border-color: var(--border-hover);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(204, 0, 0, 0.05);
+        }
+
+        .tetris-title {
             font-family: 'Press Start 2P', monospace;
+            font-size: 12px;
+            color: var(--red);
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+            opacity: 0.85;
+        }
+
+        .tetris-wrapper {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        #tetrisCanvas {
+            background: #050506;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            image-rendering: pixelated;
+            box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.8);
+        }
+
+        .tetris-info {
+            text-align: left;
+            font-family: 'Inter', sans-serif;
+            min-width: 90px;
+        }
+
+        .tetris-info .label {
+            color: var(--text-mute);
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .tetris-info .value {
+            color: var(--text);
+            font-size: 20px;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 14px;
+            letter-spacing: -0.02em;
+        }
+
+        .tetris-info .value.high {
+            color: var(--red-bright);
+            text-shadow: 0 0 20px rgba(204, 0, 0, 0.4);
+        }
+
+        .tetris-controls {
+            margin-top: 20px;
             font-size: 10px;
-            color: #666;
-            margin-top: 5px;
-            min-height: 30px;
+            color: var(--text-mute);
             line-height: 1.8;
+            border-top: 1px solid var(--border);
+            padding-top: 16px;
+            letter-spacing: 0.05em;
         }
 
-        .subscribe-form .form-message.success {
-            color: #00aa44;
-        }
-
-        .subscribe-form .form-message.error {
-            color: #cc0000;
+        .tetris-controls .key {
+            color: var(--red);
+            font-weight: 700;
         }
 
         /* ---------- ПОДВАЛ ---------- */
         footer {
+            grid-column: 1 / -1;
             text-align: center;
-            padding: 30px 0 10px;
-            border-top: 1px solid #1a1a1a;
-            color: #444;
-            font-size: 14px;
-            letter-spacing: 2px;
+            padding: 50px 0 20px;
+            border-top: 1px solid var(--border);
+            margin-top: 40px;
         }
 
-        footer span { color: #cc0000; }
-
-        .footer-copy {
-            font-family: 'Press Start 2P', monospace;
-            font-size: 12px;
-            letter-spacing: 1px;
-        }
-
-        /* ---------- СЧЁТЧИК ПОСЕЩЕНИЙ ---------- */
         .visit-counter {
-            font-family: 'Press Start 2P', monospace;
-            font-size: 14px;
-            color: #880000;
-            text-shadow: 0 0 20px rgba(136, 0, 0, 0.4);
-            letter-spacing: 2px;
-            padding: 10px 0;
-            border-top: 1px solid #1a1a1a;
-            margin-top: 15px;
-            animation: counterPulse 3s ease-in-out infinite;
-        }
-
-        @keyframes counterPulse {
-            0%, 100% { opacity: 0.7; }
-            50% { opacity: 1; }
+            font-size: 13px;
+            color: var(--text-mute);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 24px;
         }
 
         .visit-counter .number {
-            color: #cc0000;
-            font-size: 18px;
-            text-shadow: 0 0 30px rgba(204, 0, 0, 0.5);
-            display: inline-block;
-            min-width: 50px;
+            color: var(--red-bright);
+            font-weight: 800;
+            font-size: 16px;
+            margin-left: 6px;
         }
 
-        /* ---------- ВЫБОР СТРАНЫ ---------- */
         .country-selector {
-            font-family: 'Press Start 2P', monospace;
-            font-size: 11px;
-            color: #666;
-            padding: 10px 0 5px;
-            border-top: 1px solid #1a1a1a;
-            margin-top: 10px;
+            margin-bottom: 28px;
         }
 
         .country-selector select {
-            font-family: 'Press Start 2P', monospace;
-            font-size: 10px;
-            background: #0f0f0f;
-            color: #888;
-            border: 1px solid #2a2a2a;
-            border-radius: 8px;
-            padding: 6px 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            background: var(--bg-card);
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 10px 40px 10px 20px;
             cursor: pointer;
             outline: none;
-            transition: all 0.3s ease;
+            transition: var(--transition);
             appearance: none;
             -webkit-appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23666'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a8a94' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 10px center;
-            padding-right: 30px;
+            background-position: right 16px center;
+            backdrop-filter: blur(12px);
         }
 
         .country-selector select:hover {
-            border-color: #cc0000;
-            color: #cc0000;
+            border-color: var(--border-hover);
+            color: var(--text);
         }
 
         .country-selector select:focus {
-            border-color: #cc0000;
-            box-shadow: 0 0 20px rgba(204, 0, 0, 0.1);
+            border-color: var(--red);
+            box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.1);
         }
 
         .country-selector select option {
-            background: #1a1a1a;
-            color: #e0e0e0;
+            background: var(--bg-elevated);
+            color: var(--text);
+        }
+
+        .footer-copy {
+            font-size: 12px;
+            color: var(--text-mute);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            font-weight: 500;
+            margin-bottom: 20px;
         }
 
         .social-links {
             display: flex;
             justify-content: center;
-            gap: 25px;
-            margin-top: 15px;
+            gap: 8px;
             flex-wrap: wrap;
         }
 
         .social-links a {
-            font-family: 'Press Start 2P', monospace;
-            font-size: 11px;
-            color: #666;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-dim);
             text-decoration: none;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: color 0.3s;
+            letter-spacing: 0.1em;
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: 1px solid transparent;
+            transition: var(--transition);
         }
 
-        .social-links a:hover { color: #cc0000; }
+        .social-links a:hover {
+            color: var(--red-bright);
+            border-color: var(--border-hover);
+            background: rgba(204, 0, 0, 0.05);
+        }
+
+        /* ---------- КАСТОМНЫЙ КУРСОР (опционально) ---------- */
+        .custom-cursor {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            width: 24px;
+            height: 24px;
+            border: 1.5px solid var(--red);
+            border-radius: 50%;
+            background: rgba(204, 0, 0, 0.05);
+            box-shadow: 0 0 20px rgba(204, 0, 0, 0.3);
+            transition: width 0.2s ease, height 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: difference;
+        }
+
+        .custom-cursor .dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 3px;
+            height: 3px;
+            background: var(--red);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px var(--red);
+        }
+
+        .custom-cursor.hover {
+            width: 40px;
+            height: 40px;
+            border-color: var(--red-bright);
+            background: rgba(204, 0, 0, 0.1);
+        }
+
+        .custom-cursor.hover .dot {
+            background: var(--red-bright);
+        }
+
+        .custom-cursor.click {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Отключаем кастомный курсор на тач-устройствах */
+        @media (hover: none) and (pointer: coarse) {
+            * { cursor: auto !important; }
+            .custom-cursor { display: none; }
+        }
 
         /* ---------- АДАПТИВ ---------- */
-        @media (max-width: 900px) {
+        @media (max-width: 1100px) {
             .main-layout {
-                flex-direction: column;
+                grid-template-columns: 1fr;
             }
             .tetris-side {
-                width: 100%;
                 position: static;
+                max-width: 400px;
+                margin: 0 auto;
+                width: 100%;
             }
             .tetris-wrapper {
                 flex-direction: column;
@@ -957,67 +867,28 @@
                 display: flex;
                 flex-wrap: wrap;
                 justify-content: center;
-                gap: 20px;
+                gap: 24px;
                 text-align: center;
+                width: 100%;
             }
             .tetris-info .value {
                 display: inline;
                 margin-bottom: 0;
-                margin-left: 5px;
-            }
-            .subscribe-form {
-                max-width: 100%;
-            }
-            .btn-unsubscribe {
-                font-size: 12px;
-                padding: 14px 20px;
+                margin-left: 6px;
             }
         }
 
         @media (max-width: 700px) {
-            h1 .glitch-text {
-                font-size: 28px;
-            }
-            section { padding: 25px 20px; }
+            body { padding: 24px 16px; }
+            section { padding: 28px 22px; }
             .grid { grid-template-columns: 1fr; }
-            .section-title { font-size: 18px; }
-            .avatar { width: 90px; height: 90px; }
-            .project-card h3 { font-size: 12px; }
-            .social-links a { font-size: 9px; }
-            #tetrisCanvas {
-                width: 200px;
-                height: 400px;
+            .lang-btn { padding: 7px 12px; font-size: 11px; }
+            .avatar { width: 100px; height: 100px; }
+            .btn-subscribe, .btn-unsubscribe {
+                min-width: 100%;
+                flex: none;
             }
-            .subscribe-form .btn-subscribe {
-                font-size: 12px;
-                padding: 14px 20px;
-            }
-            .subscribe-form .email-input-wrap .prefix {
-                font-size: 12px;
-                padding: 12px 10px 12px 14px;
-            }
-            .lang-btn {
-                font-size: 8px;
-                padding: 4px 10px;
-            }
-            .visit-counter {
-                font-size: 11px;
-            }
-            .visit-counter .number {
-                font-size: 14px;
-            }
-            .btn-unsubscribe {
-                font-size: 11px;
-                padding: 12px 16px;
-            }
-            .country-selector {
-                font-size: 9px;
-            }
-            .country-selector select {
-                font-size: 8px;
-                padding: 4px 10px;
-                padding-right: 24px;
-            }
+            .tetris-info .value { font-size: 17px; }
         }
     </style>
 </head>
@@ -1028,436 +899,265 @@
         <div class="dot"></div>
     </div>
 
-    <!-- ---------- ФОН ---------- -->
-    <div class="bg-particles" id="particles"></div>
-
     <!-- ---------- ОСНОВНОЙ КОНТЕЙНЕР ---------- -->
-    <div class="wrapper">
+    <div class="main-layout">
 
         <!-- ===== ШАПКА ===== -->
         <header>
             <div class="avatar">
                 <img src="avatar.jpg" alt="nitroasus" />
             </div>
-            <h1>
-                <span class="glitch-text">nitroasus</span>
-            </h1>
-            <div class="tagline"><span>✦</span> artist / developer <span>✦</span></div>
+            <h1>nitroasus</h1>
+            <div class="tagline">
+                <span class="dot"></span>
+                artist · developer
+                <span class="dot"></span>
+            </div>
             
             <!-- ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКОВ -->
             <div class="lang-switcher">
-                <button class="lang-btn active" data-lang="ru">🇷🇺 Рус</button>
-                <button class="lang-btn" data-lang="en">🇬🇧 Eng</button>
-                <button class="lang-btn" data-lang="uk">🇺🇦 Укр</button>
-                <button class="lang-btn" data-lang="de">🇩🇪 De</button>
+                <button class="lang-btn active" data-lang="ru">Рус</button>
+                <button class="lang-btn" data-lang="en">Eng</button>
+                <button class="lang-btn" data-lang="uk">Укр</button>
+                <button class="lang-btn" data-lang="de">De</button>
             </div>
         </header>
 
-        <!-- ===== MAIN LAYOUT: КОНТЕНТ + ТЕТРИС ===== -->
-        <div class="main-layout">
+        <!-- ===== ЛЕВАЯ ЧАСТЬ: КОНТЕНТ ===== -->
+        <div class="content">
 
-            <!-- ЛЕВАЯ ЧАСТЬ: КОНТЕНТ -->
-            <div class="content">
+            <!-- ===== ОБО МНЕ ===== -->
+            <section>
+                <div class="section-title">
+                    <span class="num">01</span>
+                    <span class="i18n" data-key="about_title">Обо мне</span>
+                </div>
+                <div class="bio-text">
+                    <p class="i18n" data-key="about_text1">
+                        Привет! Я <strong>nitroasus</strong> — артист, который пишет <strong>музыку</strong> 
+                        и создаёт <strong>игры</strong>. Днём кодирую, ночью свожу треки.
+                    </p>
+                    <p style="margin-top: 14px;" class="i18n" data-key="about_text2">
+                        🎯 Моя цель — делать дарк-поп и хоррор-кор песни, которые будут захватывать.
+                    </p>
+                </div>
+                <div class="bio-tags">
+                    <span class="bio-tag">Electronic / Rock</span>
+                    <span class="bio-tag">Indie Games</span>
+                    <span class="bio-tag">Developer</span>
+                    <span class="bio-tag">Producer</span>
+                </div>
+            </section>
 
-                <!-- ===== ОБО МНЕ ===== -->
-                <section>
-                    <div class="section-title">
-                        <span class="icon">🔥</span> <span class="i18n" data-key="about_title">Обо мне</span>
-                    </div>
-                    <div class="bio-text">
-                        <p class="i18n" data-key="about_text1">
-                            Привет! Я <strong>nitroasus</strong> — артист, который пишет <strong>музыку</strong> 
-                            и создаёт <strong>игры</strong>. Днём кодирую, ночью свожу треки.
-                        </p>
-                        <p style="margin-top: 12px; color: #888;" class="i18n" data-key="about_text2">
-                            🎯 Моя цель — делать дарк-поп и хоррор-кор песни, которые будут захватывать.
-                        </p>
-                    </div>
-                    <div class="bio-tags">
-                        <span class="bio-tag">🎵 Electronic/Rock</span>
-                        <span class="bio-tag">🎮 Indie Games</span>
-                        <span class="bio-tag">💻 Developer</span>
-                        <span class="bio-tag">🎚️ Producer</span>
-                    </div>
-                </section>
-
-                <!-- ===== ПОДПИСКА ===== -->
-                <section>
-                    <div class="section-title">
-                        <span class="icon">📧</span> <span class="i18n" data-key="subscribe_title">Подпишись</span>
+            <!-- ===== ПОДПИСКА ===== -->
+            <section>
+                <div class="section-title">
+                    <span class="num">02</span>
+                    <span class="i18n" data-key="subscribe_title">Подпишись</span>
+                </div>
+                
+                <form class="subscribe-form" id="subscribeForm">
+                    <div>
+                        <label for="emailInput" class="i18n" data-key="email_label">E-mail</label>
+                        <div class="email-input-wrap" style="margin-top: 8px;">
+                            <span class="prefix">@</span>
+                            <input 
+                                type="email" 
+                                id="emailInput" 
+                                placeholder="tvoj@email.ru" 
+                                required
+                            />
+                        </div>
                     </div>
                     
-                    <form class="subscribe-form" id="subscribeForm">
-                        <div class="form-group">
-                            <label for="emailInput" class="i18n" data-key="email_label">✉️ e-mail</label>
-                            <div class="email-input-wrap">
-                                <span class="prefix">@</span>
-                                <input 
-                                    type="email" 
-                                    id="emailInput" 
-                                    placeholder="tvoj@email.ru" 
-                                    required
-                                />
-                            </div>
-                        </div>
-                        
-                        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                            <button type="submit" class="btn-subscribe" id="subscribeBtn">
-                                <span class="i18n" data-key="subscribe_btn">🔔 ПОДПИСАТЬСЯ</span>
-                            </button>
-                            <button type="button" class="btn-unsubscribe" id="unsubscribeBtn" style="display: none;">
-                                <span class="i18n" data-key="unsubscribe_btn">❌ ОТПИСАТЬСЯ</span>
-                            </button>
-                        </div>
-                        
-                        <div class="form-message" id="formMessage">
-                            <span class="i18n" data-key="subscribe_msg">Введи почту и нажми на кнопку</span>
-                        </div>
-                    </form>
-                </section>
-
-                <!-- ===== МУЗЫКА ===== -->
-                <section>
-                    <div class="section-title">
-                        <span class="icon">🎵</span> <span class="i18n" data-key="music_title">Треки</span>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-subscribe" id="subscribeBtn">
+                            <span class="i18n" data-key="subscribe_btn">Подписаться</span>
+                        </button>
+                        <button type="button" class="btn-unsubscribe" id="unsubscribeBtn" style="display: none;">
+                            <span class="i18n" data-key="unsubscribe_btn">Отписаться</span>
+                        </button>
                     </div>
-                    <div class="grid">
-
-                        <a href="https://music.youtube.com/@thatisnitroasus" class="project-card track" target="_blank">
-                            <span class="emoji">🎧</span>
-                            <h3>YouTube Music</h3>
-                            <div class="desc i18n" data-key="music_youtube_desc">все треки и альбомы nitroasus</div>
-                            <span class="badge i18n" data-key="music_listen">▶ Слушать</span>
-                        </a>
-
-                        <a href="https://band.link/3G10e" class="project-card track" target="_blank">
-                            <span class="emoji">💔</span>
-                            <h3>альбом "если я больше никогда не вернусь"</h3>
-                            <div class="desc i18n" data-key="music_album_desc">новый эмоциональный релиз</div>
-                            <span class="badge i18n" data-key="music_listen">▶ Слушать</span>
-                        </a>
-
-                        <a href="https://genius.com/artists/Nitroasus" class="project-card track" target="_blank">
-                            <span class="emoji">🟡</span>
-                            <h3>Genius</h3>
-                            <div class="desc i18n" data-key="music_genius_desc">тексты песен</div>
-                            <span class="badge i18n" data-key="music_read">▶ Читать</span>    
-                        </a>
-
+                    
+                    <div class="form-message" id="formMessage">
+                        <span class="i18n" data-key="subscribe_msg">Введи почту и нажми на кнопку</span>
                     </div>
-                </section>
+                </form>
+            </section>
 
-                <!-- ===== ИГРЫ ===== -->
-                <section>
-                    <div class="section-title">
-                        <span class="icon">🎮</span> <span class="i18n" data-key="games_title">Игры</span>
-                    </div>
-                    <div class="grid">
-
-                        <a href="https://nitroasusdeveloper.itch.io/" class="project-card" target="_blank">
-                            <span class="emoji">🎮</span>
-                            <h3>Itch.io</h3>
-                            <div class="desc i18n" data-key="games_itch_desc">все игры nitroasus на itch.io</div>
-                            <span class="badge i18n" data-key="games_play">▶ Играть</span>
-                        </a>
-
-                        <a href="https://play.google.com/store/apps/dev?id=6534818730371567292" class="project-card" target="_blank">
-                            <span class="emoji">📱</span>
-                            <h3>Google Play</h3>
-                            <div class="desc i18n" data-key="games_google_desc">мобильные игры в Google Play</div>
-                            <span class="badge i18n" data-key="games_play">▶ Играть</span>
-                        </a>
-
-                        <a href="https://vkplay.ru/play/game/bunker-massacre-horror-48827/?mt_link_id=lw4xm9" class="project-card" target="_blank">
-                            <span class="emoji">☠️</span>
-                            <h3>Bunker Massacre</h3>
-                            <div class="desc i18n" data-key="games_vk_desc">хоррор-игра на VK Play</div>
-                            <span class="badge i18n" data-key="games_buy">▶ Купить</span>
-                        </a>
-
-                    </div>
-                </section>
-
-                <!-- ===== БИОГРАФИЯ ===== -->
-                <section>
-                    <div class="section-title">
-                        <span class="icon">📖</span> <span class="i18n" data-key="bio_title">моя биография</span>
-                    </div>
-                    <div class="bio-text">
-                        <p class="i18n" data-key="bio_text1">
-                            <strong>Тимофеев Данила Александрович</strong>, известный как 
-                            <span class="highlight">nitroasus</span>, родился 
-                            <span class="date">4 января 2013 года</span> в городе 
-                            <strong>Самара</strong>, Россия.
-                        </p>
-                        <p style="margin-top: 16px;" class="i18n" data-key="bio_text2">
-                            🎸 Пишет треки в стиле <strong>дарк-поп</strong>, <strong>рок</strong>, 
-                            <strong>альтернатива</strong> и <strong>метал</strong>.
-                        </p>
-                        <p style="margin-top: 16px;" class="i18n" data-key="bio_text3">
-                            🇷🇺 Российский музыкальный продюсер и автор песен. 
-                            На YouTube-канале <span class="highlight">1к+</span> подписчиков.
-                        </p>
-                    </div>
-                </section>
-
-            </div>
-            <!-- КОНЕЦ ЛЕВОЙ ЧАСТИ -->
-
-            <!-- ПРАВАЯ ЧАСТЬ: ТЕТРИС -->
-            <div class="tetris-side">
-                <div class="tetris-container">
-                    <div class="tetris-wrapper">
-                        <canvas id="tetrisCanvas" width="200" height="400"></canvas>
-                        <div class="tetris-info">
-                            <div>
-                                <span class="label i18n" data-key="tetris_score">ОЧКИ</span>
-                                <span class="value" id="scoreDisplay">0</span>
-                            </div>
-                            <div>
-                                <span class="label i18n" data-key="tetris_high">РЕКОРД</span>
-                                <span class="value high" id="highScoreDisplay">0</span>
-                            </div>
-                            <div>
-                                <span class="label i18n" data-key="tetris_level">УРОВЕНЬ</span>
-                                <span class="value" id="levelDisplay">1</span>
-                            </div>
-                            <div>
-                                <span class="label i18n" data-key="tetris_lines">ЛИНИИ</span>
-                                <span class="value" id="linesDisplay">0</span>
-                            </div>
-                            <div style="margin-top: 8px;">
-                                <span class="label i18n" data-key="tetris_next">СЛЕД.</span>
-                                <canvas id="nextCanvas" width="80" height="80" style="background:#0a0a0a; border:1px solid #1a1a1a; border-radius:4px; display:block; margin-top:4px;"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tetris-controls">
-                        <span class="key">← →</span> <span class="i18n" data-key="tetris_move">движение</span> <span>|</span>
-                        <span class="key">↑</span> <span class="i18n" data-key="tetris_rotate">поворот</span> <span>|</span>
-                        <span class="key">↓</span> <span class="i18n" data-key="tetris_drop">ускорение</span> <span>|</span>
-                        <span class="key">ПРОБЕЛ</span> <span class="i18n" data-key="tetris_restart">сброс</span>
-                    </div>
+            <!-- ===== МУЗЫКА ===== -->
+            <section>
+                <div class="section-title">
+                    <span class="num">03</span>
+                    <span class="i18n" data-key="music_title">Треки</span>
                 </div>
-            </div>
-            <!-- КОНЕЦ ПРАВОЙ ЧАСТИ -->
+                <div class="grid">
+
+                    <a href="https://music.youtube.com/@thatisnitroasus" class="project-card track" target="_blank">
+                        <span class="emoji">🎧</span>
+                        <h3>YouTube Music</h3>
+                        <div class="desc i18n" data-key="music_youtube_desc">все треки и альбомы</div>
+                        <span class="badge i18n" data-key="music_listen">Слушать →</span>
+                    </a>
+
+                    <a href="https://band.link/3G10e" class="project-card track" target="_blank">
+                        <span class="emoji">💔</span>
+                        <h3>если я больше никогда не вернусь</h3>
+                        <div class="desc i18n" data-key="music_album_desc">новый эмоциональный релиз</div>
+                        <span class="badge i18n" data-key="music_listen">Слушать →</span>
+                    </a>
+
+                    <a href="https://nitro-radio.netlify.app/" class="project-card track" target="_blank">
+                        <span class="emoji">📻</span>
+                        <h3>NITRO-RADIO</h3>
+                        <div class="desc i18n" data-key="music_radio_desc">моё авторское радио</div>
+                        <span class="badge i18n" data-key="music_listen">Слушать →</span>
+                    </a>
+
+                    <a href="https://genius.com/artists/Nitroasus" class="project-card track" target="_blank">
+                        <span class="emoji">🎤</span>
+                        <h3>Genius</h3>
+                        <div class="desc i18n" data-key="music_genius_desc">тексты песен</div>
+                        <span class="badge i18n" data-key="music_read">Читать →</span>    
+                    </a>
+
+                </div>
+            </section>
+
+            <!-- ===== ИГРЫ ===== -->
+            <section>
+                <div class="section-title">
+                    <span class="num">04</span>
+                    <span class="i18n" data-key="games_title">Игры</span>
+                </div>
+                <div class="grid">
+
+                    <a href="https://nitroasusdeveloper.itch.io/" class="project-card" target="_blank">
+                        <span class="emoji">🎮</span>
+                        <h3>Itch.io</h3>
+                        <div class="desc i18n" data-key="games_itch_desc">все игры на itch.io</div>
+                        <span class="badge i18n" data-key="games_play">Играть →</span>
+                    </a>
+
+                    <a href="https://play.google.com/store/apps/dev?id=6534818730371567292" class="project-card" target="_blank">
+                        <span class="emoji">📱</span>
+                        <h3>Google Play</h3>
+                        <div class="desc i18n" data-key="games_google_desc">мобильные игры</div>
+                        <span class="badge i18n" data-key="games_play">Играть →</span>
+                    </a>
+
+                    <a href="https://vkplay.ru/play/game/bunker-massacre-horror-48827/?mt_link_id=lw4xm9" class="project-card" target="_blank">
+                        <span class="emoji">☠️</span>
+                        <h3>Bunker Massacre</h3>
+                        <div class="desc i18n" data-key="games_vk_desc">хоррор-игра на VK Play</div>
+                        <span class="badge i18n" data-key="games_buy">Купить →</span>
+                    </a>
+
+                </div>
+            </section>
+
+            <!-- ===== БИОГРАФИЯ ===== -->
+            <section>
+                <div class="section-title">
+                    <span class="num">05</span>
+                    <span class="i18n" data-key="bio_title">Биография</span>
+                </div>
+                <div class="bio-text">
+                    <p class="i18n" data-key="bio_text1">
+                        <strong>Тимофеев Данила Александрович</strong>, известный как 
+                        <span class="highlight">nitroasus</span>, родился 
+                        <span class="date">4 января 2013 года</span> в городе 
+                        <strong>Самара</strong>, Россия.
+                    </p>
+                    <p style="margin-top: 16px;" class="i18n" data-key="bio_text2">
+                        🎸 Пишет треки в стиле <strong>дарк-поп</strong>, <strong>рок</strong>, 
+                        <strong>альтернатива</strong> и <strong>метал</strong>.
+                    </p>
+                    <p style="margin-top: 16px;" class="i18n" data-key="bio_text3">
+                        🇷🇺 Российский музыкальный продюсер и автор песен. 
+                        На YouTube-канале <span class="highlight">1к+</span> подписчиков.
+                    </p>
+                </div>
+            </section>
 
         </div>
-        <!-- КОНЕЦ MAIN LAYOUT -->
+        <!-- КОНЕЦ ЛЕВОЙ ЧАСТИ -->
+
+        <!-- ===== ПРАВАЯ ЧАСТЬ: ТЕТРИС ===== -->
+        <div class="tetris-side">
+            <div class="tetris-container">
+                <div class="tetris-wrapper">
+                    <canvas id="tetrisCanvas" width="200" height="400"></canvas>
+                    <div class="tetris-info">
+                        <div>
+                            <span class="label i18n" data-key="tetris_score">Очки</span>
+                            <span class="value" id="scoreDisplay">0</span>
+                        </div>
+                        <div>
+                            <span class="label i18n" data-key="tetris_high">Рекорд</span>
+                            <span class="value high" id="highScoreDisplay">0</span>
+                        </div>
+                        <div>
+                            <span class="label i18n" data-key="tetris_level">Уровень</span>
+                            <span class="value" id="levelDisplay">1</span>
+                        </div>
+                        <div>
+                            <span class="label i18n" data-key="tetris_lines">Линии</span>
+                            <span class="value" id="linesDisplay">0</span>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <span class="label i18n" data-key="tetris_next">След.</span>
+                            <canvas id="nextCanvas" width="80" height="80" style="background:#050506; border:1px solid rgba(255,255,255,0.06); border-radius:6px; display:block; margin-top:6px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="tetris-controls">
+                    <span class="key">← →</span> <span class="i18n" data-key="tetris_move">движение</span> ·
+                    <span class="key">↑</span> <span class="i18n" data-key="tetris_rotate">поворот</span> ·
+                    <span class="key">↓</span> <span class="i18n" data-key="tetris_drop">ускорение</span> ·
+                    <span class="key">SPACE</span> <span class="i18n" data-key="tetris_restart">сброс</span>
+                </div>
+            </div>
+        </div>
+        <!-- КОНЕЦ ПРАВОЙ ЧАСТИ -->
 
         <!-- ===== ПОДВАЛ ===== -->
         <footer>
-            <!-- ===== СЧЁТЧИК ПОСЕЩЕНИЙ ===== -->
             <div class="visit-counter">
-                🧟 <span class="i18n" data-key="visit_label">ВИЗИТОВ</span>: <span class="number" id="visitCount">000</span>
+                <span class="i18n" data-key="visit_label">Визитов</span>
+                <span class="number" id="visitCount">000</span>
             </div>
 
-            <!-- ===== ВЫБОР СТРАНЫ ===== -->
             <div class="country-selector">
-                <span>🌍</span>
                 <select id="countrySelect">
-                    <option value="af">🇦🇫 Afghanistan</option>
-                    <option value="al">🇦🇱 Albania</option>
-                    <option value="dz">🇩🇿 Algeria</option>
-                    <option value="ad">🇦🇩 Andorra</option>
-                    <option value="ao">🇦🇴 Angola</option>
-                    <option value="ag">🇦🇬 Antigua and Barbuda</option>
-                    <option value="ar">🇦🇷 Argentina</option>
-                    <option value="am">🇦🇲 Armenia</option>
-                    <option value="au">🇦🇺 Australia</option>
-                    <option value="at">🇦🇹 Austria</option>
-                    <option value="az">🇦🇿 Azerbaijan</option>
-                    <option value="bs">🇧🇸 Bahamas</option>
-                    <option value="bh">🇧🇭 Bahrain</option>
-                    <option value="bd">🇧🇩 Bangladesh</option>
-                    <option value="bb">🇧🇧 Barbados</option>
-                    <option value="by">🇧🇾 Belarus</option>
-                    <option value="be">🇧🇪 Belgium</option>
-                    <option value="bz">🇧🇿 Belize</option>
-                    <option value="bj">🇧🇯 Benin</option>
-                    <option value="bt">🇧🇹 Bhutan</option>
-                    <option value="bo">🇧🇴 Bolivia</option>
-                    <option value="ba">🇧🇦 Bosnia and Herzegovina</option>
-                    <option value="bw">🇧🇼 Botswana</option>
-                    <option value="br">🇧🇷 Brazil</option>
-                    <option value="bn">🇧🇳 Brunei</option>
-                    <option value="bg">🇧🇬 Bulgaria</option>
-                    <option value="bf">🇧🇫 Burkina Faso</option>
-                    <option value="bi">🇧🇮 Burundi</option>
-                    <option value="kh">🇰🇭 Cambodia</option>
-                    <option value="cm">🇨🇲 Cameroon</option>
-                    <option value="ca">🇨🇦 Canada</option>
-                    <option value="cv">🇨🇻 Cape Verde</option>
-                    <option value="cf">🇨🇫 Central African Republic</option>
-                    <option value="td">🇹🇩 Chad</option>
-                    <option value="cl">🇨🇱 Chile</option>
-                    <option value="cn">🇨🇳 China</option>
-                    <option value="co">🇨🇴 Colombia</option>
-                    <option value="km">🇰🇲 Comoros</option>
-                    <option value="cg">🇨🇬 Congo</option>
-                    <option value="cd">🇨🇩 DR Congo</option>
-                    <option value="cr">🇨🇷 Costa Rica</option>
-                    <option value="hr">🇭🇷 Croatia</option>
-                    <option value="cu">🇨🇺 Cuba</option>
-                    <option value="cy">🇨🇾 Cyprus</option>
-                    <option value="cz">🇨🇿 Czechia</option>
-                    <option value="dk">🇩🇰 Denmark</option>
-                    <option value="dj">🇩🇯 Djibouti</option>
-                    <option value="dm">🇩🇲 Dominica</option>
-                    <option value="do">🇩🇴 Dominican Republic</option>
-                    <option value="ec">🇪🇨 Ecuador</option>
-                    <option value="eg">🇪🇬 Egypt</option>
-                    <option value="sv">🇸🇻 El Salvador</option>
-                    <option value="gq">🇬🇶 Equatorial Guinea</option>
-                    <option value="er">🇪🇷 Eritrea</option>
-                    <option value="ee">🇪🇪 Estonia</option>
-                    <option value="sz">🇸🇿 Eswatini</option>
-                    <option value="et">🇪🇹 Ethiopia</option>
-                    <option value="fj">🇫🇯 Fiji</option>
-                    <option value="fi">🇫🇮 Finland</option>
-                    <option value="fr">🇫🇷 France</option>
-                    <option value="ga">🇬🇦 Gabon</option>
-                    <option value="gm">🇬🇲 Gambia</option>
-                    <option value="ge">🇬🇪 Georgia</option>
-                    <option value="de">🇩🇪 Germany</option>
-                    <option value="gh">🇬🇭 Ghana</option>
-                    <option value="gr">🇬🇷 Greece</option>
-                    <option value="gd">🇬🇩 Grenada</option>
-                    <option value="gt">🇬🇹 Guatemala</option>
-                    <option value="gn">🇬🇳 Guinea</option>
-                    <option value="gw">🇬🇼 Guinea-Bissau</option>
-                    <option value="gy">🇬🇾 Guyana</option>
-                    <option value="ht">🇭🇹 Haiti</option>
-                    <option value="hn">🇭🇳 Honduras</option>
-                    <option value="hu">🇭🇺 Hungary</option>
-                    <option value="is">🇮🇸 Iceland</option>
-                    <option value="in">🇮🇳 India</option>
-                    <option value="id">🇮🇩 Indonesia</option>
-                    <option value="ir">🇮🇷 Iran</option>
-                    <option value="iq">🇮🇶 Iraq</option>
-                    <option value="ie">🇮🇪 Ireland</option>
-                    <option value="il">🇮🇱 Israel</option>
-                    <option value="it">🇮🇹 Italy</option>
-                    <option value="jm">🇯🇲 Jamaica</option>
-                    <option value="jp">🇯🇵 Japan</option>
-                    <option value="jo">🇯🇴 Jordan</option>
-                    <option value="kz">🇰🇿 Kazakhstan</option>
-                    <option value="ke">🇰🇪 Kenya</option>
-                    <option value="ki">🇰🇮 Kiribati</option>
-                    <option value="kp">🇰🇵 North Korea</option>
-                    <option value="kr">🇰🇷 South Korea</option>
-                    <option value="kw">🇰🇼 Kuwait</option>
-                    <option value="kg">🇰🇬 Kyrgyzstan</option>
-                    <option value="la">🇱🇦 Laos</option>
-                    <option value="lv">🇱🇻 Latvia</option>
-                    <option value="lb">🇱🇧 Lebanon</option>
-                    <option value="ls">🇱🇸 Lesotho</option>
-                    <option value="lr">🇱🇷 Liberia</option>
-                    <option value="ly">🇱🇾 Libya</option>
-                    <option value="li">🇱🇮 Liechtenstein</option>
-                    <option value="lt">🇱🇹 Lithuania</option>
-                    <option value="lu">🇱🇺 Luxembourg</option>
-                    <option value="mg">🇲🇬 Madagascar</option>
-                    <option value="mw">🇲🇼 Malawi</option>
-                    <option value="my">🇲🇾 Malaysia</option>
-                    <option value="mv">🇲🇻 Maldives</option>
-                    <option value="ml">🇲🇱 Mali</option>
-                    <option value="mt">🇲🇹 Malta</option>
-                    <option value="mh">🇲🇭 Marshall Islands</option>
-                    <option value="mr">🇲🇷 Mauritania</option>
-                    <option value="mu">🇲🇺 Mauritius</option>
-                    <option value="mx">🇲🇽 Mexico</option>
-                    <option value="fm">🇫🇲 Micronesia</option>
-                    <option value="md">🇲🇩 Moldova</option>
-                    <option value="mc">🇲🇨 Monaco</option>
-                    <option value="mn">🇲🇳 Mongolia</option>
-                    <option value="me">🇲🇪 Montenegro</option>
-                    <option value="ma">🇲🇦 Morocco</option>
-                    <option value="mz">🇲🇿 Mozambique</option>
-                    <option value="mm">🇲🇲 Myanmar</option>
-                    <option value="na">🇳🇦 Namibia</option>
-                    <option value="nr">🇳🇷 Nauru</option>
-                    <option value="np">🇳🇵 Nepal</option>
-                    <option value="nl">🇳🇱 Netherlands</option>
-                    <option value="nz">🇳🇿 New Zealand</option>
-                    <option value="ni">🇳🇮 Nicaragua</option>
-                    <option value="ne">🇳🇪 Niger</option>
-                    <option value="ng">🇳🇬 Nigeria</option>
-                    <option value="mk">🇲🇰 North Macedonia</option>
-                    <option value="no">🇳🇴 Norway</option>
-                    <option value="om">🇴🇲 Oman</option>
-                    <option value="pk">🇵🇰 Pakistan</option>
-                    <option value="pw">🇵🇼 Palau</option>
-                    <option value="pa">🇵🇦 Panama</option>
-                    <option value="pg">🇵🇬 Papua New Guinea</option>
-                    <option value="py">🇵🇾 Paraguay</option>
-                    <option value="pe">🇵🇪 Peru</option>
-                    <option value="ph">🇵🇭 Philippines</option>
-                    <option value="pl">🇵🇱 Poland</option>
-                    <option value="pt">🇵🇹 Portugal</option>
-                    <option value="qa">🇶🇦 Qatar</option>
-                    <option value="ro">🇷🇴 Romania</option>
                     <option value="ru" selected>🇷🇺 Russia</option>
-                    <option value="rw">🇷🇼 Rwanda</option>
-                    <option value="kn">🇰🇳 Saint Kitts and Nevis</option>
-                    <option value="lc">🇱🇨 Saint Lucia</option>
-                    <option value="vc">🇻🇨 Saint Vincent and the Grenadines</option>
-                    <option value="ws">🇼🇸 Samoa</option>
-                    <option value="sm">🇸🇲 San Marino</option>
-                    <option value="st">🇸🇹 Sao Tome and Principe</option>
-                    <option value="sa">🇸🇦 Saudi Arabia</option>
-                    <option value="sn">🇸🇳 Senegal</option>
-                    <option value="rs">🇷🇸 Serbia</option>
-                    <option value="sc">🇸🇨 Seychelles</option>
-                    <option value="sl">🇸🇱 Sierra Leone</option>
-                    <option value="sg">🇸🇬 Singapore</option>
-                    <option value="sk">🇸🇰 Slovakia</option>
-                    <option value="si">🇸🇮 Slovenia</option>
-                    <option value="sb">🇸🇧 Solomon Islands</option>
-                    <option value="so">🇸🇴 Somalia</option>
-                    <option value="za">🇿🇦 South Africa</option>
-                    <option value="ss">🇸🇸 South Sudan</option>
-                    <option value="es">🇪🇸 Spain</option>
-                    <option value="lk">🇱🇰 Sri Lanka</option>
-                    <option value="sd">🇸🇩 Sudan</option>
-                    <option value="sr">🇸🇷 Suriname</option>
-                    <option value="se">🇸🇪 Sweden</option>
-                    <option value="ch">🇨🇭 Switzerland</option>
-                    <option value="sy">🇸🇾 Syria</option>
-                    <option value="tw">🇹🇼 Taiwan</option>
-                    <option value="tj">🇹🇯 Tajikistan</option>
-                    <option value="tz">🇹🇿 Tanzania</option>
-                    <option value="th">🇹🇭 Thailand</option>
-                    <option value="tl">🇹🇱 Timor-Leste</option>
-                    <option value="tg">🇹🇬 Togo</option>
-                    <option value="to">🇹🇴 Tonga</option>
-                    <option value="tt">🇹🇹 Trinidad and Tobago</option>
-                    <option value="tn">🇹🇳 Tunisia</option>
-                    <option value="tr">🇹🇷 Turkey</option>
-                    <option value="tm">🇹🇲 Turkmenistan</option>
-                    <option value="tv">🇹🇻 Tuvalu</option>
-                    <option value="ug">🇺🇬 Uganda</option>
-                    <option value="ua">🇺🇦 Ukraine</option>
-                    <option value="ae">🇦🇪 United Arab Emirates</option>
-                    <option value="uk">🇬🇧 United Kingdom</option>
                     <option value="us">🇺🇸 United States</option>
-                    <option value="uy">🇺🇾 Uruguay</option>
-                    <option value="uz">🇺🇿 Uzbekistan</option>
-                    <option value="vu">🇻🇺 Vanuatu</option>
-                    <option value="va">🇻🇦 Vatican City</option>
-                    <option value="ve">🇻🇪 Venezuela</option>
-                    <option value="vn">🇻🇳 Vietnam</option>
-                    <option value="ye">🇾🇪 Yemen</option>
-                    <option value="zm">🇿🇲 Zambia</option>
-                    <option value="zw">🇿🇼 Zimbabwe</option>
+                    <option value="uk">🇬🇧 United Kingdom</option>
+                    <option value="de">🇩🇪 Germany</option>
+                    <option value="fr">🇫🇷 France</option>
+                    <option value="es">🇪🇸 Spain</option>
+                    <option value="it">🇮🇹 Italy</option>
+                    <option value="ua">🇺🇦 Ukraine</option>
+                    <option value="by">🇧🇾 Belarus</option>
+                    <option value="kz">🇰🇿 Kazakhstan</option>
+                    <option value="jp">🇯🇵 Japan</option>
+                    <option value="cn">🇨🇳 China</option>
+                    <option value="br">🇧🇷 Brazil</option>
+                    <option value="in">🇮🇳 India</option>
+                    <option value="au">🇦🇺 Australia</option>
+                    <option value="ca">🇨🇦 Canada</option>
+                    <option value="mx">🇲🇽 Mexico</option>
+                    <option value="za">🇿🇦 South Africa</option>
+                    <option value="eg">🇪🇬 Egypt</option>
+                    <option value="tr">🇹🇷 Turkey</option>
                 </select>
             </div>
 
             <div class="footer-copy">
-                <span>✦</span> © nitroasus - 2026 <span>✦</span>
+                © nitroasus · 2026
             </div>
             <div class="social-links">
-                <a href="https://music.youtube.com/@thatisnitroasus" target="_blank">YouTube Music</a>
+                <a href="https://music.youtube.com/@thatisnitroasus" target="_blank">YouTube</a>
                 <a href="https://nitroasusdeveloper.itch.io/" target="_blank">Itch.io</a>
                 <a href="https://play.google.com/store/apps/dev?id=6534818730371567292" target="_blank">Google Play</a>
                 <a href="https://vkplay.ru/play/game/bunker-massacre-horror-48827/?mt_link_id=lw4xm9" target="_blank">VK Play</a>
@@ -1471,65 +1171,35 @@
         // ===== КАСТОМНЫЙ КУРСОР =====
         (function() {
             const cursor = document.getElementById('customCursor');
-            let isHovering = false;
+            if (window.matchMedia('(hover: none)').matches) return;
 
             document.addEventListener('mousemove', function(e) {
                 cursor.style.left = e.clientX + 'px';
                 cursor.style.top = e.clientY + 'px';
             });
 
-            // Эффект при наведении на кликабельные элементы
-            const hoverElements = document.querySelectorAll('a, button, select, .project-card, .lang-btn, .btn-subscribe, .btn-unsubscribe, .bio-tag, .social-links a');
+            const hoverElements = document.querySelectorAll('a, button, select, .project-card, .lang-btn, .bio-tag');
             
             hoverElements.forEach(el => {
-                el.addEventListener('mouseenter', function() {
-                    cursor.classList.add('hover');
-                });
-                el.addEventListener('mouseleave', function() {
-                    cursor.classList.remove('hover');
-                });
+                el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+                el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
             });
 
-            // Эффект при клике
-            document.addEventListener('mousedown', function() {
-                cursor.classList.add('click');
-            });
-            document.addEventListener('mouseup', function() {
-                cursor.classList.remove('click');
-            });
+            document.addEventListener('mousedown', () => cursor.classList.add('click'));
+            document.addEventListener('mouseup', () => cursor.classList.remove('click'));
 
-            // Скрываем курсор при выходе за пределы окна
-            document.addEventListener('mouseleave', function() {
-                cursor.style.opacity = '0';
-            });
-            document.addEventListener('mouseenter', function() {
-                cursor.style.opacity = '1';
-            });
+            document.addEventListener('mouseleave', () => cursor.style.opacity = '0');
+            document.addEventListener('mouseenter', () => cursor.style.opacity = '1');
         })();
 
         // ===== СЧЁТЧИК ПОСЕЩЕНИЙ =====
         (function() {
             const visitDisplay = document.getElementById('visitCount');
-            
             let count = parseInt(localStorage.getItem('nitroasusVisits')) || 0;
             count++;
             localStorage.setItem('nitroasusVisits', count);
-            
-            function formatNumber(num) {
-                return String(num).padStart(3, '0');
-            }
-            
-            visitDisplay.textContent = formatNumber(count);
-            
-            visitDisplay.style.transition = 'transform 0.15s ease, color 0.3s ease';
-            visitDisplay.style.transform = 'scale(1.3)';
-            visitDisplay.style.color = '#ff3333';
-            setTimeout(() => {
-                visitDisplay.style.transform = 'scale(1)';
-                visitDisplay.style.color = '#cc0000';
-            }, 200);
-            
-            console.log(`🧟 Посещение #${formatNumber(count)}`);
+            visitDisplay.textContent = String(count).padStart(3, '0');
+            console.log(`🧟 Посещение #${String(count).padStart(3, '0')}`);
         })();
 
         // ===== ПЕРЕКЛЮЧЕНИЕ ЯЗЫКОВ =====
@@ -1540,36 +1210,37 @@
                     about_text1: 'Привет! Я <strong>nitroasus</strong> — артист, который пишет <strong>музыку</strong> и создаёт <strong>игры</strong>. Днём кодирую, ночью свожу треки.',
                     about_text2: '🎯 Моя цель — делать дарк-поп и хоррор-кор песни, которые будут захватывать.',
                     subscribe_title: 'Подпишись',
-                    email_label: '✉️ e-mail',
-                    subscribe_btn: '🔔 ПОДПИСАТЬСЯ',
+                    email_label: 'E-mail',
+                    subscribe_btn: 'Подписаться',
                     subscribe_msg: 'Введи почту и нажми на кнопку',
                     music_title: 'Треки',
-                    music_youtube_desc: 'все треки и альбомы nitroasus',
-                    music_listen: '▶ Слушать',
+                    music_youtube_desc: 'все треки и альбомы',
+                    music_listen: 'Слушать →',
                     music_album_desc: 'новый эмоциональный релиз',
+                    music_radio_desc: 'моё авторское радио',
                     music_genius_desc: 'тексты песен',
-                    music_read: '▶ Читать',
+                    music_read: 'Читать →',
                     games_title: 'Игры',
-                    games_itch_desc: 'все игры nitroasus на itch.io',
-                    games_play: '▶ Играть',
-                    games_google_desc: 'мобильные игры в Google Play',
+                    games_itch_desc: 'все игры на itch.io',
+                    games_play: 'Играть →',
+                    games_google_desc: 'мобильные игры',
                     games_vk_desc: 'хоррор-игра на VK Play',
-                    games_buy: '▶ Купить',
-                    bio_title: 'моя биография',
+                    games_buy: 'Купить →',
+                    bio_title: 'Биография',
                     bio_text1: '<strong>Тимофеев Данила Александрович</strong>, известный как <span class="highlight">nitroasus</span>, родился <span class="date">4 января 2013 года</span> в городе <strong>Самара</strong>, Россия.',
                     bio_text2: '🎸 Пишет треки в стиле <strong>дарк-поп</strong>, <strong>рок</strong>, <strong>альтернатива</strong> и <strong>метал</strong>.',
                     bio_text3: '🇷🇺 Российский музыкальный продюсер и автор песен. На YouTube-канале <span class="highlight">1к+</span> подписчиков.',
-                    tetris_score: 'ОЧКИ',
-                    tetris_high: 'РЕКОРД',
-                    tetris_level: 'УРОВЕНЬ',
-                    tetris_lines: 'ЛИНИИ',
-                    tetris_next: 'СЛЕД.',
+                    tetris_score: 'Очки',
+                    tetris_high: 'Рекорд',
+                    tetris_level: 'Уровень',
+                    tetris_lines: 'Линии',
+                    tetris_next: 'След.',
                     tetris_move: 'движение',
                     tetris_rotate: 'поворот',
                     tetris_drop: 'ускорение',
                     tetris_restart: 'сброс',
-                    visit_label: 'ВИЗИТОВ',
-                    unsubscribe_btn: '❌ ОТПИСАТЬСЯ',
+                    visit_label: 'Визитов',
+                    unsubscribe_btn: 'Отписаться',
                     unsubscribed: '❌ Ты отписался. Жаль, что уходишь... 😢',
                     unsubscribed_msg: 'Введи почту и нажми на кнопку, чтобы подписаться снова'
                 },
@@ -1578,36 +1249,37 @@
                     about_text1: 'Hi! I\'m <strong>nitroasus</strong> — an artist who makes <strong>music</strong> and creates <strong>games</strong>. I code during the day and mix tracks at night.',
                     about_text2: '🎯 My goal is to make dark-pop and horror-core songs that will captivate you.',
                     subscribe_title: 'Subscribe',
-                    email_label: '✉️ e-mail',
-                    subscribe_btn: '🔔 SUBSCRIBE',
+                    email_label: 'E-mail',
+                    subscribe_btn: 'Subscribe',
                     subscribe_msg: 'Enter your email and press the button',
                     music_title: 'Tracks',
-                    music_youtube_desc: 'all tracks and albums by nitroasus',
-                    music_listen: '▶ Listen',
+                    music_youtube_desc: 'all tracks and albums',
+                    music_listen: 'Listen →',
                     music_album_desc: 'new emotional release',
+                    music_radio_desc: 'my own author radio',
                     music_genius_desc: 'song lyrics',
-                    music_read: '▶ Read',
+                    music_read: 'Read →',
                     games_title: 'Games',
-                    games_itch_desc: 'all nitroasus games on itch.io',
-                    games_play: '▶ Play',
-                    games_google_desc: 'mobile games on Google Play',
+                    games_itch_desc: 'all games on itch.io',
+                    games_play: 'Play →',
+                    games_google_desc: 'mobile games',
                     games_vk_desc: 'horror game on VK Play',
-                    games_buy: '▶ Buy',
-                    bio_title: 'my biography',
+                    games_buy: 'Buy →',
+                    bio_title: 'Biography',
                     bio_text1: '<strong>Danila Timofeev</strong>, known as <span class="highlight">nitroasus</span>, was born on <span class="date">January 4, 2013</span> in the city of <strong>Samara</strong>, Russia.',
                     bio_text2: '🎸 Writes tracks in <strong>dark-pop</strong>, <strong>rock</strong>, <strong>alternative</strong> and <strong>metal</strong> styles.',
                     bio_text3: '🇷🇺 Russian music producer and songwriter. Over <span class="highlight">1k+</span> subscribers on YouTube.',
-                    tetris_score: 'SCORE',
-                    tetris_high: 'HIGH',
-                    tetris_level: 'LEVEL',
-                    tetris_lines: 'LINES',
-                    tetris_next: 'NEXT',
+                    tetris_score: 'Score',
+                    tetris_high: 'High',
+                    tetris_level: 'Level',
+                    tetris_lines: 'Lines',
+                    tetris_next: 'Next',
                     tetris_move: 'move',
                     tetris_rotate: 'rotate',
                     tetris_drop: 'drop',
-                    tetris_restart: 'restart',
-                    visit_label: 'VISITS',
-                    unsubscribe_btn: '❌ UNSUBSCRIBE',
+                    tetris_restart: 'reset',
+                    visit_label: 'Visits',
+                    unsubscribe_btn: 'Unsubscribe',
                     unsubscribed: '❌ You have unsubscribed. Sad to see you go... 😢',
                     unsubscribed_msg: 'Enter your email and press the button to subscribe again'
                 },
@@ -1616,36 +1288,37 @@
                     about_text1: 'Привіт! Я <strong>nitroasus</strong> — артист, який пише <strong>музику</strong> та створює <strong>ігри</strong>. Вдень кодю, вночі зводжу треки.',
                     about_text2: '🎯 Моя мета — робити дарк-поп та хоррор-кор пісні, які захоплюватимуть.',
                     subscribe_title: 'Підпишись',
-                    email_label: '✉️ e-mail',
-                    subscribe_btn: '🔔 ПІДПИСАТИСЯ',
+                    email_label: 'E-mail',
+                    subscribe_btn: 'Підписатися',
                     subscribe_msg: 'Введи пошту і натисни кнопку',
                     music_title: 'Треки',
-                    music_youtube_desc: 'всі треки та альбоми nitroasus',
-                    music_listen: '▶ Слухати',
+                    music_youtube_desc: 'всі треки та альбоми',
+                    music_listen: 'Слухати →',
                     music_album_desc: 'новий емоційний реліз',
+                    music_radio_desc: 'моє авторське радіо',
                     music_genius_desc: 'тексти пісень',
-                    music_read: '▶ Читати',
+                    music_read: 'Читати →',
                     games_title: 'Ігри',
-                    games_itch_desc: 'всі ігри nitroasus на itch.io',
-                    games_play: '▶ Грати',
-                    games_google_desc: 'мобільні ігри в Google Play',
+                    games_itch_desc: 'всі ігри на itch.io',
+                    games_play: 'Грати →',
+                    games_google_desc: 'мобільні ігри',
                     games_vk_desc: 'хоррор-гра на VK Play',
-                    games_buy: '▶ Купити',
-                    bio_title: 'моя біографія',
+                    games_buy: 'Купити →',
+                    bio_title: 'Біографія',
                     bio_text1: '<strong>Тимофеєв Данило Олександрович</strong>, відомий як <span class="highlight">nitroasus</span>, народився <span class="date">4 січня 2013 року</span> у місті <strong>Самара</strong>, Росія.',
                     bio_text2: '🎸 Пише треки у стилях <strong>дарк-поп</strong>, <strong>рок</strong>, <strong>альтернатива</strong> та <strong>метал</strong>.',
                     bio_text3: '🇷🇺 Російський музичний продюсер та автор пісень. На YouTube-каналі <span class="highlight">1к+</span> підписників.',
-                    tetris_score: 'ОЧКИ',
-                    tetris_high: 'РЕКОРД',
-                    tetris_level: 'РІВЕНЬ',
-                    tetris_lines: 'ЛІНІЇ',
-                    tetris_next: 'НАСТ.',
+                    tetris_score: 'Очки',
+                    tetris_high: 'Рекорд',
+                    tetris_level: 'Рівень',
+                    tetris_lines: 'Лінії',
+                    tetris_next: 'Наст.',
                     tetris_move: 'рух',
                     tetris_rotate: 'поворот',
                     tetris_drop: 'прискор.',
                     tetris_restart: 'скид',
-                    visit_label: 'ВІДВІДИНИ',
-                    unsubscribe_btn: '❌ ВІДПИСАТИСЯ',
+                    visit_label: 'Відвідини',
+                    unsubscribe_btn: 'Відписатися',
                     unsubscribed: '❌ Ти відписався. Шкода, що йдеш... 😢',
                     unsubscribed_msg: 'Введи пошту і натисни кнопку, щоб підписатися знову'
                 },
@@ -1654,47 +1327,47 @@
                     about_text1: 'Hallo! Ich bin <strong>nitroasus</strong> — ein Künstler, der <strong>Musik</strong> macht und <strong>Spiele</strong> entwickelt. Tagsüber code ich, nachts mische ich Tracks.',
                     about_text2: '🎯 Mein Ziel ist es, Dark-Pop- und Horror-Core-Songs zu machen, die fesseln.',
                     subscribe_title: 'Abonnieren',
-                    email_label: '✉️ E-Mail',
-                    subscribe_btn: '🔔 ABONNIEREN',
+                    email_label: 'E-Mail',
+                    subscribe_btn: 'Abonnieren',
                     subscribe_msg: 'Gib deine E-Mail ein und klicke auf den Button',
                     music_title: 'Tracks',
-                    music_youtube_desc: 'alle Tracks und Alben von nitroasus',
-                    music_listen: '▶ Hören',
+                    music_youtube_desc: 'alle Tracks und Alben',
+                    music_listen: 'Hören →',
                     music_album_desc: 'neues emotionales Release',
+                    music_radio_desc: 'mein eigenes Autoradio',
                     music_genius_desc: 'Songtexte',
-                    music_read: '▶ Lesen',
+                    music_read: 'Lesen →',
                     games_title: 'Spiele',
-                    games_itch_desc: 'alle nitroasus-Spiele auf itch.io',
-                    games_play: '▶ Spielen',
-                    games_google_desc: 'Mobile Spiele auf Google Play',
+                    games_itch_desc: 'alle Spiele auf itch.io',
+                    games_play: 'Spielen →',
+                    games_google_desc: 'Mobile Spiele',
                     games_vk_desc: 'Horror-Spiel auf VK Play',
-                    games_buy: '▶ Kaufen',
-                    bio_title: 'meine Biografie',
+                    games_buy: 'Kaufen →',
+                    bio_title: 'Biografie',
                     bio_text1: '<strong>Danila Timofeev</strong>, bekannt als <span class="highlight">nitroasus</span>, wurde am <span class="date">4. Januar 2013</span> in der Stadt <strong>Samara</strong>, Russland, geboren.',
                     bio_text2: '🎸 Schreibt Tracks in den Stilen <strong>Dark-Pop</strong>, <strong>Rock</strong>, <strong>Alternative</strong> und <strong>Metal</strong>.',
                     bio_text3: '🇷🇺 Russischer Musikproduzent und Songwriter. Über <span class="highlight">1k+</span> Abonnenten auf YouTube.',
-                    tetris_score: 'PUNKTE',
-                    tetris_high: 'REKORD',
-                    tetris_level: 'LEVEL',
-                    tetris_lines: 'LINIEN',
-                    tetris_next: 'NÄCHSTE',
+                    tetris_score: 'Punkte',
+                    tetris_high: 'Rekord',
+                    tetris_level: 'Level',
+                    tetris_lines: 'Linien',
+                    tetris_next: 'Nächste',
                     tetris_move: 'bewegen',
                     tetris_rotate: 'drehen',
                     tetris_drop: 'fallen',
                     tetris_restart: 'neustart',
-                    visit_label: 'BESUCHE',
-                    unsubscribe_btn: '❌ ABBESTELLEN',
+                    visit_label: 'Besuche',
+                    unsubscribe_btn: 'Abbestellen',
                     unsubscribed: '❌ Du hast abbestellt. Schade, dass du gehst... 😢',
                     unsubscribed_msg: 'Gib deine E-Mail ein und klicke auf den Button, um erneut zu abonnieren'
                 }
             };
 
-            let currentLang = 'ru';
             const langBtns = document.querySelectorAll('.lang-btn');
 
             function setLanguage(lang) {
-                currentLang = lang;
                 const data = translations[lang];
+                if (!data) return;
                 
                 document.querySelectorAll('.i18n').forEach(el => {
                     const key = el.getAttribute('data-key');
@@ -1715,9 +1388,7 @@
             }
 
             langBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    setLanguage(btn.dataset.lang);
-                });
+                btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
             });
 
             const savedLang = localStorage.getItem('nitroasusLang');
@@ -1726,7 +1397,7 @@
             }
         })();
 
-        // ===== ПОДПИСКА ПО EMAIL (с отпиской) =====
+        // ===== ПОДПИСКА =====
         (function() {
             const form = document.getElementById('subscribeForm');
             const emailInput = document.getElementById('emailInput');
@@ -1736,77 +1407,71 @@
 
             let isSubscribed = false;
 
-            function getTranslation(key) {
+            function getT(key) {
                 const translations = {
                     ru: {
-                        success: '✅ Отлично! {email} подписан на новости nitroasus! 🔥',
-                        already: '✅ Ты уже подписан, братан! Спасибо! ❤️',
-                        error: '❌ Введи корректный email (например, tvoj@email.ru)',
+                        success: '✅ Отлично! {email} подписан на новости! 🔥',
+                        already: '✅ Ты уже подписан! Спасибо!',
+                        error: '❌ Введи корректный email',
                         placeholder: 'Введи почту и нажми на кнопку',
-                        subscribed: '🔔 ПОДПИСАН',
-                        unsubscribe: '❌ ОТПИСАТЬСЯ',
+                        subscribed: 'Подписан',
+                        unsubscribe: 'Отписаться',
                         unsubscribed: '❌ Ты отписался. Жаль, что уходишь... 😢',
                         unsubscribed_msg: 'Введи почту и нажми на кнопку, чтобы подписаться снова'
                     },
                     en: {
-                        success: '✅ Great! {email} subscribed to nitroasus news! 🔥',
-                        already: '✅ You\'re already subscribed, bro! Thanks! ❤️',
-                        error: '❌ Enter a valid email (e.g., your@email.com)',
+                        success: '✅ Great! {email} subscribed! 🔥',
+                        already: '✅ You\'re already subscribed! Thanks!',
+                        error: '❌ Enter a valid email',
                         placeholder: 'Enter your email and press the button',
-                        subscribed: '🔔 SUBSCRIBED',
-                        unsubscribe: '❌ UNSUBSCRIBE',
+                        subscribed: 'Subscribed',
+                        unsubscribe: 'Unsubscribe',
                         unsubscribed: '❌ You have unsubscribed. Sad to see you go... 😢',
                         unsubscribed_msg: 'Enter your email and press the button to subscribe again'
                     },
                     uk: {
-                        success: '✅ Чудово! {email} підписався на новини nitroasus! 🔥',
-                        already: '✅ Ти вже підписаний, брате! Дякую! ❤️',
-                        error: '❌ Введи коректну пошту (наприклад, tvoj@email.ua)',
+                        success: '✅ Чудово! {email} підписався! 🔥',
+                        already: '✅ Ти вже підписаний! Дякую!',
+                        error: '❌ Введи коректну пошту',
                         placeholder: 'Введи пошту і натисни кнопку',
-                        subscribed: '🔔 ПІДПИСАНО',
-                        unsubscribe: '❌ ВІДПИСАТИСЯ',
+                        subscribed: 'Підписано',
+                        unsubscribe: 'Відписатися',
                         unsubscribed: '❌ Ти відписався. Шкода, що йдеш... 😢',
                         unsubscribed_msg: 'Введи пошту і натисни кнопку, щоб підписатися знову'
                     },
                     de: {
-                        success: '✅ Großartig! {email} hat nitroasus-News abonniert! 🔥',
-                        already: '✅ Du bist bereits abonniert, Bruder! Danke! ❤️',
-                        error: '❌ Gib eine gültige E-Mail ein (z.B. deine@email.de)',
+                        success: '✅ Großartig! {email} abonniert! 🔥',
+                        already: '✅ Du bist bereits abonniert! Danke!',
+                        error: '❌ Gib eine gültige E-Mail ein',
                         placeholder: 'Gib deine E-Mail ein und klicke auf den Button',
-                        subscribed: '🔔 ABONNIERT',
-                        unsubscribe: '❌ ABBESTELLEN',
+                        subscribed: 'Abonniert',
+                        unsubscribe: 'Abbestellen',
                         unsubscribed: '❌ Du hast abbestellt. Schade, dass du gehst... 😢',
                         unsubscribed_msg: 'Gib deine E-Mail ein und klicke auf den Button, um erneut zu abonnieren'
                     }
                 };
-
                 const lang = localStorage.getItem('nitroasusLang') || 'ru';
                 return translations[lang]?.[key] || translations.ru[key];
             }
 
-            function getCurrentLang() {
-                return localStorage.getItem('nitroasusLang') || 'ru';
-            }
-
             function updateUI(subscribed, email) {
-                const lang = getCurrentLang();
+                const lang = localStorage.getItem('nitroasusLang') || 'ru';
                 const msgs = {
-                    ru: { subscribed: '🔔 ПОДПИСАН', unsubscribe: '❌ ОТПИСАТЬСЯ' },
-                    en: { subscribed: '🔔 SUBSCRIBED', unsubscribe: '❌ UNSUBSCRIBE' },
-                    uk: { subscribed: '🔔 ПІДПИСАНО', unsubscribe: '❌ ВІДПИСАТИСЯ' },
-                    de: { subscribed: '🔔 ABONNIERT', unsubscribe: '❌ ABBESTELLEN' }
+                    ru: { subscribed: 'Подписан', unsubscribe: 'Отписаться' },
+                    en: { subscribed: 'Subscribed', unsubscribe: 'Unsubscribe' },
+                    uk: { subscribed: 'Підписано', unsubscribe: 'Відписатися' },
+                    de: { subscribed: 'Abonniert', unsubscribe: 'Abbestellen' }
                 };
 
                 if (subscribed) {
                     subscribeBtn.innerHTML = msgs[lang]?.subscribed || msgs.ru.subscribed;
                     subscribeBtn.classList.add('subscribed');
-                    unsubscribeBtn.style.display = 'inline-block';
+                    unsubscribeBtn.style.display = 'block';
                     emailInput.disabled = true;
                     emailInput.style.opacity = '0.5';
                     if (email) {
                         emailInput.value = email;
-                        const msg = getTranslation('already');
-                        formMessage.textContent = msg;
+                        formMessage.textContent = getT('already');
                         formMessage.className = 'form-message success';
                     }
                 } else {
@@ -1815,63 +1480,49 @@
                     unsubscribeBtn.style.display = 'none';
                     emailInput.disabled = false;
                     emailInput.style.opacity = '1';
-                    formMessage.textContent = getTranslation('unsubscribed_msg');
+                    formMessage.textContent = getT('unsubscribed_msg');
                     formMessage.className = 'form-message';
                     emailInput.value = '';
-                    localStorage.removeItem('nitroasusEmail');
                 }
-            }
-
-            function subscribe(email) {
-                isSubscribed = true;
-                localStorage.setItem('nitroasusSubscribed', 'true');
-                localStorage.setItem('nitroasusEmail', email);
-                updateUI(true, email);
-                
-                const successMsg = getTranslation('success').replace('{email}', email);
-                formMessage.textContent = successMsg;
-                formMessage.className = 'form-message success';
-                
-                console.log('📧 Новый подписчик:', email);
-            }
-
-            function unsubscribe() {
-                isSubscribed = false;
-                localStorage.removeItem('nitroasusSubscribed');
-                localStorage.removeItem('nitroasusEmail');
-                updateUI(false);
-                
-                formMessage.textContent = getTranslation('unsubscribed');
-                formMessage.className = 'form-message';
-                
-                console.log('❌ Пользователь отписался');
             }
 
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
-
                 const email = emailInput.value.trim();
-
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
                 if (!emailRegex.test(email)) {
-                    formMessage.textContent = getTranslation('error');
+                    formMessage.textContent = getT('error');
                     formMessage.className = 'form-message error';
                     return;
                 }
 
                 if (isSubscribed) {
-                    formMessage.textContent = getTranslation('already');
+                    formMessage.textContent = getT('already');
                     formMessage.className = 'form-message success';
                     return;
                 }
 
-                subscribe(email);
+                isSubscribed = true;
+                localStorage.setItem('nitroasusSubscribed', 'true');
+                localStorage.setItem('nitroasusEmail', email);
+                updateUI(true, email);
+                
+                formMessage.textContent = getT('success').replace('{email}', email);
+                formMessage.className = 'form-message success';
+                console.log('📧 Новый подписчик:', email);
             });
 
             unsubscribeBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 if (isSubscribed) {
-                    unsubscribe();
+                    isSubscribed = false;
+                    localStorage.removeItem('nitroasusSubscribed');
+                    localStorage.removeItem('nitroasusEmail');
+                    updateUI(false);
+                    formMessage.textContent = getT('unsubscribed');
+                    formMessage.className = 'form-message';
+                    console.log('❌ Пользователь отписался');
                 }
             });
 
@@ -1908,39 +1559,29 @@
             const levelDisplay = document.getElementById('levelDisplay');
             const linesDisplay = document.getElementById('linesDisplay');
 
-            const COLS = 10;
-            const ROWS = 20;
-            const BLOCK_SIZE = 20;
+            const COLS = 10, ROWS = 20, BLOCK_SIZE = 20;
 
             const SHAPES = [
-                { matrix: [[1,1,1,1]], color: '#666' },
-                { matrix: [[1,1],[1,1]], color: '#777' },
-                { matrix: [[0,1,0],[1,1,1]], color: '#888' },
-                { matrix: [[0,1,1],[1,1,0]], color: '#999' },
-                { matrix: [[1,1,0],[0,1,1]], color: '#888' },
-                { matrix: [[1,0,0],[1,1,1]], color: '#777' },
-                { matrix: [[0,0,1],[1,1,1]], color: '#666' }
+                { matrix: [[1,1,1,1]], color: '#8a8a94' },
+                { matrix: [[1,1],[1,1]], color: '#9a9aa4' },
+                { matrix: [[0,1,0],[1,1,1]], color: '#7a7a84' },
+                { matrix: [[0,1,1],[1,1,0]], color: '#aaaab4' },
+                { matrix: [[1,1,0],[0,1,1]], color: '#8a8a94' },
+                { matrix: [[1,0,0],[1,1,1]], color: '#9a9aa4' },
+                { matrix: [[0,0,1],[1,1,1]], color: '#7a7a84' }
             ];
 
-            let board = [];
-            let currentPiece = null;
-            let score = 0;
+            let board = [], currentPiece = null, score = 0;
             let highScore = parseInt(localStorage.getItem('tetrisHighScore')) || 0;
-            let level = 1;
-            let lines = 0;
-            let gameOver = false;
-            let dropInterval = null;
+            let level = 1, lines = 0, gameOver = false, dropInterval = null;
 
             function initBoard() {
                 board = [];
-                for (let r = 0; r < ROWS; r++) {
-                    board.push(new Array(COLS).fill(0));
-                }
+                for (let r = 0; r < ROWS; r++) board.push(new Array(COLS).fill(0));
             }
 
             function createPiece() {
-                const idx = Math.floor(Math.random() * SHAPES.length);
-                const shape = SHAPES[idx];
+                const shape = SHAPES[Math.floor(Math.random() * SHAPES.length)];
                 return {
                     matrix: shape.matrix.map(row => [...row]),
                     color: shape.color,
@@ -1953,10 +1594,9 @@
                 for (let r = 0; r < matrix.length; r++) {
                     for (let c = 0; c < matrix[0].length; c++) {
                         if (matrix[r][c] !== 0) {
-                            const boardX = pieceX + c;
-                            const boardY = pieceY + r;
-                            if (boardX < 0 || boardX >= COLS || boardY >= ROWS || boardY < 0) return true;
-                            if (boardY >= 0 && board[boardY][boardX] !== 0) return true;
+                            const bx = pieceX + c, by = pieceY + r;
+                            if (bx < 0 || bx >= COLS || by >= ROWS || by < 0) return true;
+                            if (by >= 0 && board[by][bx] !== 0) return true;
                         }
                     }
                 }
@@ -1967,14 +1607,9 @@
                 for (let r = 0; r < currentPiece.matrix.length; r++) {
                     for (let c = 0; c < currentPiece.matrix[0].length; c++) {
                         if (currentPiece.matrix[r][c] !== 0) {
-                            const boardX = currentPiece.x + c;
-                            const boardY = currentPiece.y + r;
-                            if (boardY < 0) {
-                                gameOver = true;
-                                clearInterval(dropInterval);
-                                return;
-                            }
-                            board[boardY][boardX] = currentPiece.color;
+                            const by = currentPiece.y + r;
+                            if (by < 0) { gameOver = true; clearInterval(dropInterval); return; }
+                            board[by][currentPiece.x + c] = currentPiece.color;
                         }
                     }
                 }
@@ -1991,14 +1626,12 @@
 
                 if (cleared > 0) {
                     const points = [0, 100, 300, 500, 800];
-                    const addScore = (points[cleared] || 0) * level;
-                    score += addScore;
+                    score += (points[cleared] || 0) * level;
                     lines += cleared;
                     level = Math.floor(lines / 10) + 1;
                     if (dropInterval) {
                         clearInterval(dropInterval);
-                        const speed = Math.max(100, 500 - (level - 1) * 40);
-                        dropInterval = setInterval(dropPiece, speed);
+                        dropInterval = setInterval(dropPiece, Math.max(100, 500 - (level - 1) * 40));
                     }
                 }
 
@@ -2038,29 +1671,16 @@
 
             function rotatePiece() {
                 if (gameOver || !currentPiece) return;
-                const matrix = currentPiece.matrix;
-                const rotated = matrix[0].map((_, idx) => matrix.map(row => row[idx]).reverse());
+                const rotated = currentPiece.matrix[0].map((_, i) => currentPiece.matrix.map(row => row[i]).reverse());
                 if (!collides(rotated, currentPiece.x, currentPiece.y)) {
                     currentPiece.matrix = rotated;
                     draw();
-                } else {
-                    const kicks = [-1, 1, -2, 2];
-                    for (const kick of kicks) {
-                        if (!collides(rotated, currentPiece.x + kick, currentPiece.y)) {
-                            currentPiece.matrix = rotated;
-                            currentPiece.x += kick;
-                            draw();
-                            break;
-                        }
-                    }
                 }
             }
 
             function hardDrop() {
                 if (gameOver || !currentPiece) return;
-                while (!collides(currentPiece.matrix, currentPiece.x, currentPiece.y + 1)) {
-                    currentPiece.y++;
-                }
+                while (!collides(currentPiece.matrix, currentPiece.x, currentPiece.y + 1)) currentPiece.y++;
                 lockPiece();
                 draw();
             }
@@ -2071,13 +1691,11 @@
                     for (let c = 0; c < COLS; c++) {
                         if (board[r][c] !== 0) {
                             ctx.fillStyle = board[r][c];
-                            ctx.fillRect(c * BLOCK_SIZE, r * BLOCK_SIZE, BLOCK_SIZE - 0.5, BLOCK_SIZE - 0.5);
-                            ctx.fillStyle = 'rgba(0,0,0,0.15)';
-                            ctx.fillRect(c * BLOCK_SIZE, r * BLOCK_SIZE, BLOCK_SIZE - 0.5, BLOCK_SIZE - 0.5);
+                            ctx.fillRect(c * BLOCK_SIZE, r * BLOCK_SIZE, BLOCK_SIZE - 1, BLOCK_SIZE - 1);
                         } else {
-                            ctx.fillStyle = '#0a0a0a';
-                            ctx.fillRect(c * BLOCK_SIZE, r * BLOCK_SIZE, BLOCK_SIZE - 0.5, BLOCK_SIZE - 0.5);
-                            ctx.fillStyle = '#111';
+                            ctx.fillStyle = '#08080a';
+                            ctx.fillRect(c * BLOCK_SIZE, r * BLOCK_SIZE, BLOCK_SIZE - 1, BLOCK_SIZE - 1);
+                            ctx.fillStyle = '#101014';
                             ctx.fillRect(c * BLOCK_SIZE + 0.5, r * BLOCK_SIZE + 0.5, 1, 1);
                         }
                     }
@@ -2090,48 +1708,35 @@
                                 const x = (currentPiece.x + c) * BLOCK_SIZE;
                                 const y = (currentPiece.y + r) * BLOCK_SIZE;
                                 ctx.fillStyle = currentPiece.color;
-                                ctx.fillRect(x, y, BLOCK_SIZE - 0.5, BLOCK_SIZE - 0.5);
-                                ctx.shadowColor = 'rgba(136,0,0,0.2)';
-                                ctx.shadowBlur = 4;
-                                ctx.fillRect(x, y, BLOCK_SIZE - 0.5, BLOCK_SIZE - 0.5);
-                                ctx.shadowBlur = 0;
+                                ctx.fillRect(x, y, BLOCK_SIZE - 1, BLOCK_SIZE - 1);
                             }
                         }
                     }
                 }
 
                 if (gameOver) {
-                    ctx.fillStyle = 'rgba(0,0,0,0.7)';
+                    ctx.fillStyle = 'rgba(0,0,0,0.85)';
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    ctx.fillStyle = '#880000';
-                    ctx.font = '18px "Press Start 2P", monospace';
+                    ctx.fillStyle = '#cc0000';
+                    ctx.font = 'bold 16px Inter, sans-serif';
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
-                    ctx.fillText('GAME OVER', canvas.width/2, canvas.height/2 - 10);
-                    ctx.fillStyle = '#666';
-                    ctx.font = '10px "Press Start 2P", monospace';
-                    ctx.fillText('ПРОБЕЛ', canvas.width/2, canvas.height/2 + 30);
+                    ctx.fillText('GAME OVER', canvas.width/2, canvas.height/2);
                 }
             }
 
             function drawNext() {
                 nextCtx.clearRect(0, 0, nextCanvas.width, nextCanvas.height);
                 if (currentPiece) {
-                    const matrix = currentPiece.matrix;
-                    const blockSize = 20;
-                    const cols = matrix[0].length;
-                    const rows = matrix.length;
-                    const offsetX = (nextCanvas.width - cols * blockSize) / 2;
-                    const offsetY = (nextCanvas.height - rows * blockSize) / 2;
-                    for (let r = 0; r < rows; r++) {
-                        for (let c = 0; c < cols; c++) {
-                            if (matrix[r][c] !== 0) {
+                    const m = currentPiece.matrix;
+                    const bs = 20;
+                    const ox = (nextCanvas.width - m[0].length * bs) / 2;
+                    const oy = (nextCanvas.height - m.length * bs) / 2;
+                    for (let r = 0; r < m.length; r++) {
+                        for (let c = 0; c < m[0].length; c++) {
+                            if (m[r][c] !== 0) {
                                 nextCtx.fillStyle = currentPiece.color;
-                                nextCtx.fillRect(offsetX + c * blockSize, offsetY + r * blockSize, blockSize - 0.5, blockSize - 0.5);
-                                nextCtx.shadowColor = 'rgba(136,0,0,0.15)';
-                                nextCtx.shadowBlur = 4;
-                                nextCtx.fillRect(offsetX + c * blockSize, offsetY + r * blockSize, blockSize - 0.5, blockSize - 0.5);
-                                nextCtx.shadowBlur = 0;
+                                nextCtx.fillRect(ox + c * bs, oy + r * bs, bs - 1, bs - 1);
                             }
                         }
                     }
@@ -2148,33 +1753,25 @@
             function restartGame() {
                 if (dropInterval) clearInterval(dropInterval);
                 initBoard();
-                score = 0;
-                lines = 0;
-                level = 1;
-                gameOver = false;
+                score = 0; lines = 0; level = 1; gameOver = false;
                 currentPiece = createPiece();
-                const speed = 500;
-                dropInterval = setInterval(dropPiece, speed);
+                dropInterval = setInterval(dropPiece, 500);
                 updateInfo();
                 drawNext();
                 draw();
             }
 
             document.addEventListener('keydown', (e) => {
-                const key = e.key;
-                if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(key)) {
+                if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
                     e.preventDefault();
                 }
-                if (key === 'ArrowLeft') movePiece(-1);
-                else if (key === 'ArrowRight') movePiece(1);
-                else if (key === 'ArrowDown') dropPiece();
-                else if (key === 'ArrowUp') rotatePiece();
-                else if (key === ' ') {
-                    if (gameOver) {
-                        restartGame();
-                    } else {
-                        hardDrop();
-                    }
+                if (e.key === 'ArrowLeft') movePiece(-1);
+                else if (e.key === 'ArrowRight') movePiece(1);
+                else if (e.key === 'ArrowDown') dropPiece();
+                else if (e.key === 'ArrowUp') rotatePiece();
+                else if (e.key === ' ') {
+                    if (gameOver) restartGame();
+                    else hardDrop();
                 }
             });
 
@@ -2187,25 +1784,7 @@
             draw();
         })();
 
-        // ---- 1. ФОН: ПАРТИКЛЫ ----
-        const particlesContainer = document.getElementById('particles');
-        for (let i = 0; i < 30; i++) {
-            const p = document.createElement('div');
-            p.classList.add('particle');
-            p.style.left = Math.random() * 100 + '%';
-            p.style.width = (Math.random() * 5 + 2) + 'px';
-            p.style.height = p.style.width;
-            p.style.animationDuration = (Math.random() * 12 + 8) + 's';
-            p.style.animationDelay = (Math.random() * 10) + 's';
-            p.style.opacity = Math.random() * 0.4 + 0.1;
-            particlesContainer.appendChild(p);
-        }
-
-        // ---- 2. ПРИВЕТСТВИЕ ----
-        console.log('🔥 nitroasus - Artist & Developer');
-        console.log('🌍 Мультиязычный сайт готов!');
-        console.log('🧟 Счётчик посещений: ' + document.getElementById('visitCount').textContent);
-        console.log('🖱️ Кастомный курсор и Glitch-эффект активированы!');
+        console.log('🔥 nitroasus — professional edition loaded');
     </script>
 
 </body>
